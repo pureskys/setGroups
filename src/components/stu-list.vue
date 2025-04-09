@@ -4,7 +4,7 @@
       <h2>学生名单</h2>
     </header>
     <div class="list">
-      <el-scrollbar>
+      <el-scrollbar class="list-scrollbar">
         <VueDraggable animation="150"
                       ghostClass="ghost"
                       class="drag"
@@ -12,10 +12,10 @@
                       @update="onUpdate"
                       @add="onAdd"
                       @remove="remove" v-model="stu_list ">
-          <el-card shadow="hover" class="stu" v-for="item in stu_list"
-                   :key="item.id">
+          <div class="stu" v-for="item in stu_list"
+               :key="item.id">
             <span>{{ item.name }}</span>
-          </el-card>
+          </div>
         </VueDraggable>
       </el-scrollbar>
     </div>
@@ -70,16 +70,22 @@ function remove() {
     width: 100%;
     height: calc(100% - 45.2px);
 
+    .list-scrollbar {
+      width: 100%;
+    }
+
     .drag {
       user-select: none;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 8px;
+      margin-right: 12px;
+      margin-left: 10px;
+      height: 100%;
 
       .stu {
         display: flex;
-        margin: 4px;
+        box-shadow: 0 0 5px #d1d1d1;
         justify-content: center;
         align-items: center;
         border-radius: 8px;
