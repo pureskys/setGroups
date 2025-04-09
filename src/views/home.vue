@@ -1,0 +1,30 @@
+<template>
+  <div class="home">
+    <div style="flex: 1">
+      <StuList></StuList>
+    </div>
+    <div style="flex: 5">
+      <Seat></Seat>
+    </div>
+    <div style="flex: 1">
+      <Group></Group>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import StuList from "./../components/stu-list.vue";
+import Group from "./../components/group.vue";
+import Seat from "./../components/seat.vue";
+</script>
+
+<style lang="scss" scoped>
+.home {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+}
+</style>
