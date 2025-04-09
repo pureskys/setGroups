@@ -9,6 +9,7 @@
 
 <style lang="scss" scoped>
 .group {
-  background-color: red;
+  border: 1px solid red;
+  height: 95vh;
 }
 </style>

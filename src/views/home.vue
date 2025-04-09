@@ -6,7 +6,7 @@
     <div style="flex: 5">
       <Seat></Seat>
     </div>
-    <div style="flex: 1">
+    <div style="flex: 2">
       <Group></Group>
     </div>
   </div>

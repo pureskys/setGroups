@@ -1,208 +1,212 @@
 import {defineStore} from 'pinia'
-import {reactive, ref} from "vue";
+import {ref} from "vue";
 
 export const useStuList = defineStore('stuLists', () => {
     const stu_list = ref([
         {
-            name: '张三1',
+            name: '欧阳娜',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
-            name: '张三2',
+            name: '欧阳娜',
             id: '1',
-            sex:'女'
+            sex: '男'
         }, {
-            name: '张三3',
+            name: '欧阳娜',
             id: '1',
-            sex:'男'
+            sex: '女'
         }, {
-            name: '张三4',
+            name: '站三分',
             id: '1',
-            sex:'女'
+            sex: '男'
         }, {
-            name: '张三5',
+            name: '菠萝啤',
             id: '1',
-            sex:'男'
-        }, {
-            name: '张三5',
-            id: '1',
-            sex:'男'
+            sex: '女'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
         }, {
             name: '张三5',
             id: '1',
-            sex:'男'
+            sex: '男'
+        }, {
+            name: '张三5',
+            id: '1',
+            sex: '男'
+        }, {
+            name: '张三99',
+            id: '1',
+            sex: '男'
         }
     ])
 

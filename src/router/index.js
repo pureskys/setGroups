@@ -13,19 +13,14 @@ const routes = [
                 component: () => import('./../components/stu-list.vue'),
             },
             {
-                path: 'seat',
+                path: '/seat',
                 name: 'seat',
                 component: () => import('./../components/seat.vue'),
             },
             {
-                path: 'group',
+                path: '/group',
                 name: 'group',
                 component: () => import('./../components/group.vue'),
-            },
-            {
-                path: 'top-menu',
-                name: 'top-menu',
-                component: () => import('./../components/top-menu.vue'),
             }
         ]
     }
