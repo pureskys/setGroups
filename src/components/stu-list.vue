@@ -8,10 +8,11 @@
         <VueDraggable animation="150"
                       ghostClass="ghost"
                       class="drag"
-                      group="people"
+                      group="stu"
                       @update="onUpdate"
                       @add="onAdd"
-                      @remove="remove" v-model="stu_list ">
+                      @remove="remove"
+                      v-model="stu_list ">
           <div class="stu" v-for="item in stu_list"
                :key="item.id">
             <span>{{ item.name }}</span>
@@ -51,7 +52,7 @@ function remove() {
   padding: 8px 4px;
   height: 95vh;
   margin: 0 10px;
-  min-width: 210px;
+  min-width: 205px;
   border-radius: 8px;
 
   .stu-head {
