@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build --base=/teacher-tools",
+    "build": "vite build --base /teacher-tools",
     "preview": "vite preview"
   },
   "dependencies": {

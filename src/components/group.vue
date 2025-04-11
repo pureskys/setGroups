@@ -1,19 +1,19 @@
 <template>
-  <div class="group">
-    <div>阿三大苏打</div>
-    <div>阿三大苏打</div>
-    <div>阿三大苏打</div>
-  </div>
+  <el-scrollbar max-height="95vh" >
+    <p v-for="item in 2" :key="item" class="scrollbar-demo-item">{{ item }}</p>
+  </el-scrollbar>
 </template>
 
-<script setup>
-
-</script>
-
-<style lang="scss" scoped>
-.group {
+<style scoped>
+.scrollbar-demo-item {
   display: flex;
-  height: 95vh;
-  border: 1px solid red;
+  align-items: center;
+  justify-content: center;
+  height: 50px;
+  margin: 10px;
+  text-align: center;
+  border-radius: 4px;
+  background: var(--el-color-primary-light-9);
+  color: var(--el-color-primary);
 }
 </style>

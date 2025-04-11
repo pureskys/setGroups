@@ -5,83 +5,88 @@ export const useStuList = defineStore('stuLists', () => {
     const stu_list = ref([
         {
             name: '欧阳娜',
-            id: '1',
+            id: '0',
             sex: '男'
-        }, {
+        },
+        {
             name: '欧阳娜',
             id: '1',
             sex: '男'
         }, {
             name: '欧阳娜',
-            id: '1',
+            id: '2',
+            sex: '男'
+        }, {
+            name: '欧阳娜',
+            id: '3',
             sex: '女'
         }, {
             name: '站三分',
-            id: '1',
+            id: '4',
             sex: '男'
         }, {
             name: '菠萝啤',
-            id: '1',
+            id: '5',
             sex: '女'
         }, {
             name: '张三5',
-            id: '1',
+            id: '6',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '7',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '8',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '9',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '10',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '11',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '12',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '13',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '14',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '15',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '16',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '17',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '18',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '19',
             sex: '男'
         }, {
             name: '张三5',
-            id: '1',
+            id: '20',
             sex: '男'
         }, {
             name: '张三5',
