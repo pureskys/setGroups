@@ -51,14 +51,13 @@ import {Checked, DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from './../store/index.js'
 import {storeToRefs} from 'pinia'
-import {cloneDeep} from 'lodash'
 
 const row = ref(6)  // 行数
 const column = ref(6)  // 列数
 const row_column = computed(() => row.value * column.value)  // 座次数量
 const stu_list_none = ref()  // 座位占位数组
-const {stu_list} = storeToRefs(useAllData());  // 响应式解构数据
-let stu_list_temp = []
+const {stu_list, is_upload} = storeToRefs(useAllData());  // 响应式解构数据
+let is_seat = true
 
 // 监听 row_column 变化，更新 stu_list_none
 watch(
@@ -74,60 +73,43 @@ watch(
       } else {
         stu_list_none.value = Array.from({length: newVal}, () => []);
       }
-
     },
-    {immediate: true} // 启动时立即执行一次初始化
+    {immediate: true}
 );
+
 // 随机排座方法
 const randomSeat = () => {
   const stu_list_length = stu_list.value.length  // 获取学生数量长度
-  const seat_length = stu_list_none.value.length // 获取虚拟座位的长度
-// 数组随机排序算法
-  const setRandomSeat = (arr) => {
-    const len = arr.length;
-    if (stu_list_length >= seat_length) {
-      for (let i = 0; i < arr.length; i++) {
-        stu_list_none.value[i].push(stu_list.value[i]);
+  // 数组随机排序算法
+  const setRandomSeat = () => {
+    let fillerIndex = 0;
+
+    // 直接修改 mainArray.value（Vue 3 会保持响应式）
+    for (let i = 0; i < stu_list_none.value.length; i++) {
+      if (Array.isArray(stu_list_none.value[i]) && stu_list_none.value[i].length === 0) {
+        if (fillerIndex < stu_list.value.length) {
+          stu_list_none.value[i] = [stu_list.value[fillerIndex++]];
+        }
       }
     }
-    for (let i = 0; i < len - 1; i++) {
-      const index = parseInt(Math.random() * (len - i));
+
+    const arr = stu_list_none.value
+    const len = arr.length;
+    for (let ii = 0; ii < len - 1; ii++) {
+      const index = parseInt(Math.random() * (len - ii));
       const temp = arr[index];
-      arr[index] = arr[len - i - 1];
-      arr[len - i - 1] = temp;
+      arr[index] = arr[len - ii - 1];
+      arr[len - ii - 1] = temp;
     }
+    stu_list.value.length = 0
   }
-  // 设置座位
-  // const setSeat = () => {
-  //   if (stu_list.value.length !== 0 && stu_list_length >= seat_length) {
-  //     stu_list_temp = cloneDeep(stu_list.value);  // 缓存学生数据
-  //   }
-  //   console.log('缓存的数据', stu_list_temp);
-  //   const random_stu_list = shuffle(stu_list_temp)
-  //   const seat = cloneDeep(stu_list_none.value);
-  //   for (let i = 0; i < random_stu_list.length; i++) {
-  //     seat[i].push(random_stu_list[i]);
-  //   }
-  //   stu_list_none.value = seat;
-  // }
-
-  if (stu_list_length === 0) {
-    setRandomSeat(stu_list.value);
-  }
-  stu_list_none.value.length = 0  // 清空已经排座位的学生
-  if (stu_list_length >= seat_length) {
+  if (stu_list_length !== 0 && is_seat === true) {
     row.value = Math.ceil(stu_list_length / column.value)
-    setTimeout(() => {
-      setRandomSeat(stu_list.value)
-    }, 500)
-
-  } else if (stu_list_length < seat_length) {
-
-    setTimeout(() => {
-      setRandomSeat(stu_list.value)
-    }, 500)
+    is_seat = false
   }
-
+  setTimeout(() => {
+    setRandomSeat()
+  }, 700)
 }
 
 </script>
