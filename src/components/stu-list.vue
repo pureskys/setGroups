@@ -5,17 +5,31 @@
     </header>
     <div class="list">
       <el-scrollbar class="list-scrollbar">
+        <div v-if="stu_list.length === 0 && is_upload === true">
+          <el-upload
+              class="upload-demo"
+              accept=".xlsx,.xls"
+              :drag="true"
+              :auto-upload="false"
+              :on-change="upload_file"
+          >
+            <el-icon class="el-icon--upload">
+              <upload-filled/>
+            </el-icon>
+            <div class="el-upload__text">
+              <em>拖动文件到此导入</em>
+            </div>
+          </el-upload>
+        </div>
         <VueDraggable animation="150"
+                      v-else
                       ghostClass="ghost"
                       class="drag"
                       group="stu"
-                      @update="onUpdate"
-                      @add="onAdd"
-                      @remove="remove"
                       v-model="stu_list ">
           <div class="stu" v-for="item in stu_list"
                :key="item.id">
-            <span>{{ item.name }}</span>
+            <span>{{ item.姓名 }}</span>
           </div>
         </VueDraggable>
       </el-scrollbar>
@@ -25,22 +39,31 @@
 
 <script setup>
 import {VueDraggable} from "vue-draggable-plus";
-import {useStuList} from "./../store/stuList.js";
+import {useAllData} from "./../store/index.js";
 import {storeToRefs} from "pinia";
+import {UploadFilled} from "@element-plus/icons-vue";
+import {readFile, sheetToJson} from './../utils/xlsl-tools.js'
 
-const {stu_list} = storeToRefs(useStuList());
+const {stu_list, is_upload} = storeToRefs(useAllData());  // 响应式解构store数据
 
-function onUpdate() {
-  console.log('update')
+// 上传文件方法（其实是upload文件改变的方法）
+const upload_file = async (file) => {
+  // 获取excel的二进制数据
+  const rawFile = file.raw
+  const data = await readFile(rawFile)
+  try {
+    const result = await sheetToJson(data)
+    console.log('获取的sheet数据:',result)
+    stu_list.value = result;
+    is_upload.value = false;
+  } catch (err) {
+    is_upload.value = true;
+    console.error(err)
+  }
+
 }
 
-function onAdd() {
-  console.log('add')
-}
 
-function remove() {
-  console.log('remove')
-}
 </script>
 
 <style lang="scss" scoped>
@@ -78,14 +101,15 @@ function remove() {
     .drag {
       user-select: none;
       display: grid;
+      padding-right: 10px;
+      padding-left: 10px;
       grid-template-columns: repeat(2, 1fr);
-      gap: 8px;
-      margin-right: 12px;
-      margin-left: 10px;
+      min-height: 140px;
       height: 100%;
 
       .stu {
         display: flex;
+        margin: 3px;
         box-shadow: 0 0 5px #d1d1d1;
         justify-content: center;
         align-items: center;

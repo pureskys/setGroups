@@ -8,13 +8,13 @@
       <span>列:</span>
       <el-input v-model.number="column" type="number" class="seat-header-input"/>
       <div class="seat-header-bnt">
-        <el-button type="primary" :icon="Grid" style="margin-top: 3.5px;margin-left: 5px">
+        <el-button type="primary" :icon="Grid" @click="randomSeat" style="margin-top: 3.5px;margin-left: 5px">
           <p>随机排座</p>
         </el-button>
         <el-button type="primary" :icon="Promotion" style="margin-top: 3.5px">
           <p>导出座位</p>
         </el-button>
-        <el-button type="primary" :icon="DeleteFilled" style="margin-top: 3.5px">
+        <el-button type="primary" :icon="Checked" style="margin-top: 3.5px">
           <p>保存布局</p>
         </el-button>
         <el-button type="primary" :icon="DeleteFilled" style="margin-top: 3.5px">
@@ -29,13 +29,12 @@
             <VueDraggable
                 class="seat-main-scrollbar-drag-drag"
                 v-for="(seat,index) in stu_list_none"
-                @add="a"
                 animation="150"
                 group="stu"
                 ghostClass="ghost"
                 v-model="stu_list_none[index]">
               <div v-for="item in seat" class="seat-main-scrollbar-drag-card">
-                <span>{{ item.name }}</span>
+                <span>{{ item.姓名 }}</span>
               </div>
             </VueDraggable>
           </div>
@@ -48,28 +47,88 @@
 
 <script setup>
 import {computed, ref, watch} from "vue";
-import {DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
+import {Checked, DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
+import {useAllData} from './../store/index.js'
+import {storeToRefs} from 'pinia'
+import {cloneDeep} from 'lodash'
 
-
-const row = ref(5)  // 行数
+const row = ref(6)  // 行数
 const column = ref(6)  // 列数
 const row_column = computed(() => row.value * column.value)  // 座次数量
 const stu_list_none = ref()  // 座位占位数组
+const {stu_list} = storeToRefs(useAllData());  // 响应式解构数据
+let stu_list_temp = []
 
 // 监听 row_column 变化，更新 stu_list_none
 watch(
     () => row_column.value,
-    (newVal) => {
-      stu_list_none.value = Array.from({length: newVal}, () => []);
+    (newVal, oldValue) => {
+      if (newVal > oldValue) {
+        const len = newVal - oldValue
+        stu_list_none.value.push(...Array(len).fill([]))
+      } else if (newVal < oldValue) {
+        const len = newVal - oldValue  // 复负数
+        const len2 = oldValue - newVal  // 正数
+        stu_list_none.value.splice(len, len2)
+      } else {
+        stu_list_none.value = Array.from({length: newVal}, () => []);
+      }
+
     },
     {immediate: true} // 启动时立即执行一次初始化
 );
+// 随机排座方法
+const randomSeat = () => {
+  const stu_list_length = stu_list.value.length  // 获取学生数量长度
+  const seat_length = stu_list_none.value.length // 获取虚拟座位的长度
+// 数组随机排序算法
+  const setRandomSeat = (arr) => {
+    const len = arr.length;
+    if (stu_list_length >= seat_length) {
+      for (let i = 0; i < arr.length; i++) {
+        stu_list_none.value[i].push(stu_list.value[i]);
+      }
+    }
+    for (let i = 0; i < len - 1; i++) {
+      const index = parseInt(Math.random() * (len - i));
+      const temp = arr[index];
+      arr[index] = arr[len - i - 1];
+      arr[len - i - 1] = temp;
+    }
+  }
+  // 设置座位
+  // const setSeat = () => {
+  //   if (stu_list.value.length !== 0 && stu_list_length >= seat_length) {
+  //     stu_list_temp = cloneDeep(stu_list.value);  // 缓存学生数据
+  //   }
+  //   console.log('缓存的数据', stu_list_temp);
+  //   const random_stu_list = shuffle(stu_list_temp)
+  //   const seat = cloneDeep(stu_list_none.value);
+  //   for (let i = 0; i < random_stu_list.length; i++) {
+  //     seat[i].push(random_stu_list[i]);
+  //   }
+  //   stu_list_none.value = seat;
+  // }
 
-function a(e) {
-  console.log(e.item)
+  if (stu_list_length === 0) {
+    setRandomSeat(stu_list.value);
+  }
+  stu_list_none.value.length = 0  // 清空已经排座位的学生
+  if (stu_list_length >= seat_length) {
+    row.value = Math.ceil(stu_list_length / column.value)
+    setTimeout(() => {
+      setRandomSeat(stu_list.value)
+    }, 500)
+
+  } else if (stu_list_length < seat_length) {
+
+    setTimeout(() => {
+      setRandomSeat(stu_list.value)
+    }, 500)
+  }
+
 }
-
 
 </script>
 
@@ -142,7 +201,7 @@ function a(e) {
 
         .seat-main-scrollbar-drag-drag {
           border-radius: 10px;
-          box-shadow:0 0 10px #d1d1d1;
+          box-shadow: 0 0 10px #d1d1d1;
           min-height: 55px;
           display: flex;
           flex-direction: column;
@@ -151,6 +210,7 @@ function a(e) {
           .seat-main-scrollbar-drag-card {
             flex: 1;
             display: flex;
+            font-size: 20px;
             user-select: none;
             justify-content: center;
             align-items: center;
