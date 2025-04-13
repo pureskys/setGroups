@@ -19,6 +19,11 @@
             <div class="el-upload__text">
               <em>拖动文件到此导入</em>
             </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                仅支持导入excel且至少有一列表头为“姓名” 注意：不要有任何合并的的单元格
+              </div>
+            </template>
           </el-upload>
         </div>
         <VueDraggable animation="150"
@@ -77,6 +82,10 @@ const upload_file = async (file) => {
   margin: 0 10px;
   min-width: 205px;
   border-radius: 8px;
+  @media (max-width: 600px) {
+    height: 100%;
+    width: 100%;
+  }
 
   .stu-head {
     user-select: none;

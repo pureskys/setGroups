@@ -11,7 +11,7 @@
         <el-button type="primary" :icon="Grid" @click="randomSeat" style="margin-top: 3.5px;margin-left: 5px">
           <p>随机排座</p>
         </el-button>
-        <el-button type="primary" :icon="Promotion" style="margin-top: 3.5px">
+        <el-button type="primary" :icon="Promotion" @click="exportSeats" style="margin-top: 3.5px">
           <p>导出座位</p>
         </el-button>
         <el-button type="primary" :icon="Checked" style="margin-top: 3.5px">
@@ -51,13 +51,14 @@ import {Checked, DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from './../store/index.js'
 import {storeToRefs} from 'pinia'
+import {exportToWord} from './../utils/export-seats.js'
 
 const row = ref(6)  // 行数
 const column = ref(6)  // 列数
 const row_column = computed(() => row.value * column.value)  // 座次数量
 const stu_list_none = ref()  // 座位占位数组
 const {stu_list, is_upload} = storeToRefs(useAllData());  // 响应式解构数据
-let is_seat = true
+let is_seat = true  // 是否随机排座的标记
 
 // 监听 row_column 变化，更新 stu_list_none
 watch(
@@ -77,6 +78,13 @@ watch(
     {immediate: true}
 );
 
+// 到处座位
+const exportSeats = () => {
+  if (stu_list_none.value.length > 0 && is_upload.value === false) {
+    exportToWord(stu_list_none.value, row.value, column.value)
+  }
+
+}
 // 随机排座方法
 const randomSeat = () => {
   const stu_list_length = stu_list.value.length  // 获取学生数量长度

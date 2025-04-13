@@ -1,19 +1,18 @@
 <template>
-  <el-scrollbar max-height="95vh" >
-    <p v-for="item in 2" :key="item" class="scrollbar-demo-item">{{ item }}</p>
-  </el-scrollbar>
+  <div class="group">
+    待开发<br/>
+    后续该区域将作为学生小组功能区
+  </div>
 </template>
 
-<style scoped>
-.scrollbar-demo-item {
+<script setup>
+
+</script>
+
+<style lang="scss" scoped>
+.group {
   display: flex;
-  align-items: center;
   justify-content: center;
-  height: 50px;
-  margin: 10px;
-  text-align: center;
-  border-radius: 4px;
-  background: var(--el-color-primary-light-9);
-  color: var(--el-color-primary);
+  align-items: center;
 }
 </style>

@@ -27,4 +27,16 @@ import Seat from "./../components/seat.vue";
   width: 100vw;
   height: 100vh;
 }
+
+/* 移动设备样式 */
+@media (max-width: 600px) {
+  .home {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+}
 </style>
