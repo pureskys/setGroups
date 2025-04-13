@@ -49,7 +49,7 @@ import {storeToRefs} from "pinia";
 import {UploadFilled} from "@element-plus/icons-vue";
 import {readFile, sheetToJson} from './../utils/xlsl-tools.js'
 
-const {stu_list, is_upload} = storeToRefs(useAllData());  // 响应式解构store数据
+const {stu_list, is_upload, stu_list_length} = storeToRefs(useAllData());  // 响应式解构store数据
 
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
@@ -58,9 +58,10 @@ const upload_file = async (file) => {
   const data = await readFile(rawFile)
   try {
     const result = await sheetToJson(data)
-    console.log('获取的sheet数据:',result)
+    console.log('获取的sheet数据:', result)
     stu_list.value = result;
     is_upload.value = false;
+    stu_list_length.value = result.length
   } catch (err) {
     is_upload.value = true;
     console.error(err)

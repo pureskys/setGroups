@@ -8,7 +8,8 @@
       <span>列:</span>
       <el-input v-model.number="column" type="number" class="seat-header-input"/>
       <div class="seat-header-bnt">
-        <el-button class="but-random" type="primary" :icon="Grid" @click="randomSeat" style="margin-top: 3.5px;margin-left: 5px">
+        <el-button class="but-random" type="primary" :icon="Grid" @click="randomSeat"
+                   style="margin-top: 3.5px;margin-left: 5px">
           <p>随机排座</p>
         </el-button>
         <el-button type="primary" :icon="Promotion" @click="exportSeats" style="margin-top: 3.5px">
@@ -43,8 +44,8 @@
 </template>
 
 <script setup>
-import {computed, ref, watch} from "vue";
-import {Checked, DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
+import {computed, ref, toRaw, watch} from "vue";
+import {DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from './../store/index.js'
 import {storeToRefs} from 'pinia'
@@ -54,7 +55,7 @@ const row = ref(6)  // 行数
 const column = ref(6)  // 列数
 const row_column = computed(() => row.value * column.value)  // 座次数量
 const stu_list_none = ref()  // 座位占位数组
-const {stu_list, is_upload} = storeToRefs(useAllData());  // 响应式解构数据
+const {stu_list, is_upload, stu_list_length} = storeToRefs(useAllData());  // 响应式解构数据
 let is_seat = true  // 是否随机排座的标记
 
 // 监听 row_column 变化，更新 stu_list_none
@@ -84,21 +85,19 @@ const exportSeats = () => {
 }
 // 随机排座方法
 const randomSeat = () => {
-  const stu_list_length = stu_list.value.length  // 获取学生数量长度
   // 数组随机排序算法
   const setRandomSeat = () => {
-    let fillerIndex = 0;
+    const stu_list_none_flat = toRaw(stu_list_none.value.flat())
+    console.log('yw', stu_list_none_flat)
+    stu_list.value.push(...stu_list_none_flat)
 
-    // 直接修改 mainArray.value（Vue 3 会保持响应式）
-    for (let i = 0; i < stu_list_none.value.length; i++) {
-      if (Array.isArray(stu_list_none.value[i]) && stu_list_none.value[i].length === 0) {
-        if (fillerIndex < stu_list.value.length) {
-          stu_list_none.value[i] = [stu_list.value[fillerIndex++]];
-        }
-      }
+    const arr = stu_list.value.map(item => [item])
+    console.log('arr', arr)
+    console.log(arr.length, row_column.value)
+    if (arr.length !== row_column.value) {
+      const len = row_column.value - arr.length
+      arr.push(...Array(len).fill([]))
     }
-
-    const arr = stu_list_none.value
     const len = arr.length;
     for (let ii = 0; ii < len - 1; ii++) {
       const index = parseInt(Math.random() * (len - ii));
@@ -106,10 +105,11 @@ const randomSeat = () => {
       arr[index] = arr[len - ii - 1];
       arr[len - ii - 1] = temp;
     }
+    stu_list_none.value = arr
     stu_list.value.length = 0
   }
-  if (stu_list_length !== 0 && is_seat === true) {
-    row.value = Math.ceil(stu_list_length / column.value)
+  if (stu_list_length.value !== 0 && is_seat === true) {
+    row.value = Math.ceil(stu_list_length.value / column.value)
     is_seat = false
   }
   setTimeout(() => {
@@ -131,7 +131,7 @@ const randomSeat = () => {
     width: 100vw;
     height: 100%;
     margin: 10px 0;
-    .but-random{
+    .but-random {
       display: none;
     }
   }
