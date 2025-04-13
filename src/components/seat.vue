@@ -88,13 +88,10 @@ const randomSeat = () => {
   // 数组随机排序算法
   const setRandomSeat = () => {
     const stu_list_none_flat = toRaw(stu_list_none.value.flat())
-    console.log('yw', stu_list_none_flat)
     stu_list.value.push(...stu_list_none_flat)
 
     const arr = stu_list.value.map(item => [item])
-    console.log('arr', arr)
-    console.log(arr.length, row_column.value)
-    if (arr.length !== row_column.value) {
+    if (arr.length !== row_column.value && stu_list_length.value.length !== 0) {
       const len = row_column.value - arr.length
       arr.push(...Array(len).fill([]))
     }
