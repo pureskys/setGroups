@@ -84,7 +84,7 @@ const upload_file = async (file) => {
   border-radius: 8px;
   @media (max-width: 600px) {
     height: 100%;
-    width: 100%;
+    width: 100vw;
   }
 
   .stu-head {
@@ -115,6 +115,11 @@ const upload_file = async (file) => {
       grid-template-columns: repeat(2, 1fr);
       min-height: 140px;
       height: 100%;
+      @media (max-width: 600px) {
+        grid-template-rows: repeat(4, 1fr);
+        grid-auto-flow: column;
+        gap: 5px;
+      }
 
       .stu {
         display: flex;
@@ -124,6 +129,9 @@ const upload_file = async (file) => {
         align-items: center;
         border-radius: 8px;
         height: 33px;
+        @media (max-width: 600px) {
+          width: 100px;
+        }
       }
     }
 

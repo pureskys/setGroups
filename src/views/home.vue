@@ -31,6 +31,7 @@ import Seat from "./../components/seat.vue";
 /* 移动设备样式 */
 @media (max-width: 600px) {
   .home {
+    margin: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;

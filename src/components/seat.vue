@@ -8,14 +8,11 @@
       <span>列:</span>
       <el-input v-model.number="column" type="number" class="seat-header-input"/>
       <div class="seat-header-bnt">
-        <el-button type="primary" :icon="Grid" @click="randomSeat" style="margin-top: 3.5px;margin-left: 5px">
+        <el-button class="but-random" type="primary" :icon="Grid" @click="randomSeat" style="margin-top: 3.5px;margin-left: 5px">
           <p>随机排座</p>
         </el-button>
         <el-button type="primary" :icon="Promotion" @click="exportSeats" style="margin-top: 3.5px">
           <p>导出座位</p>
-        </el-button>
-        <el-button type="primary" :icon="Checked" style="margin-top: 3.5px">
-          <p>保存布局</p>
         </el-button>
         <el-button type="primary" :icon="DeleteFilled" style="margin-top: 3.5px">
           <p>清空数据</p>
@@ -130,6 +127,14 @@ const randomSeat = () => {
   border-radius: 8px;
   height: 95vh;
   width: 100%;
+  @media (max-width: 600px) {
+    width: 100vw;
+    height: 100%;
+    margin: 10px 0;
+    .but-random{
+      display: none;
+    }
+  }
 
   .seat-header {
     padding-left: 16px;
