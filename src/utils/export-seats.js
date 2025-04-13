@@ -12,11 +12,10 @@ import {
 } from "docx";
 
 export const exportToWord = async (Data, rowCount, cols,) => {
-    // 扁平化数据为一维数组
-    const flatData = Data.flat();
     // 创建表格行
     const tableRows = [];
-    let key = flatData.length  // 标记循环停止时机
+    let key = Data.length  // 标记循环停止时机
+    console.log(key)
     // 添加数据行
     for (let i = 0; i < rowCount + 99; i++) {
         const rowCells = [];
@@ -42,7 +41,6 @@ export const exportToWord = async (Data, rowCount, cols,) => {
                         })
                 );
             } catch (e) {
-                key++  // 处理异常添加学生次数加1
                 rowCells.push(
                     new TableCell(
                         {
