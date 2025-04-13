@@ -15,7 +15,12 @@ export const exportToWord = async (Data, rowCount, cols,) => {
     // 创建表格行
     const tableRows = [];
     let key = Data.length  // 标记循环停止时机
-    console.log(key)
+
+    // 计算等宽单元格的宽度（根据页面宽度和列数计算）
+    const pageWidthTwips = 15840; // A4横版页面宽度约15840缇（29.7cm×567）
+    const margins = 2000; // 左右边距各1000缇
+    const availableWidth = pageWidthTwips - margins;
+    const cellWidth = Math.floor(availableWidth / cols); // 每列等宽
     // 添加数据行
     for (let i = 0; i < rowCount + 99; i++) {
         const rowCells = [];
@@ -115,6 +120,8 @@ export const exportToWord = async (Data, rowCount, cols,) => {
                         rows: tableRows,
                         alignment: 'center',
                         width: {size: 100, type: WidthType.PERCENTAGE}, // 表格宽度100%
+                        columnWidths: Array(cols).fill(cellWidth), // 设置等宽列
+                        layout: "fixed" // 固定布局确保等宽
                     }),
                 ],
             },
