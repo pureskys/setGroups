@@ -4,9 +4,9 @@
       <h2 style="white-space: nowrap">座位布局</h2>
       <span class="seat-header-line"></span>
       <span>行:</span>
-      <el-input v-model.number="row" type="number" class="seat-header-input"/>
+      <el-input v-model.number="row" type="number" min="1" class="seat-header-input"/>
       <span>列:</span>
-      <el-input v-model.number="column" type="number" class="seat-header-input"/>
+      <el-input v-model.number="column" type="number" min="1" class="seat-header-input"/>
       <div class="seat-header-bnt">
         <el-button class="but-random" type="primary" :icon="Grid" @click="randomSeat"
                    style="margin-top: 3.5px;margin-left: 5px">
@@ -15,7 +15,7 @@
         <el-button type="primary" :icon="Promotion" @click="exportSeats" style="margin-top: 3.5px">
           <p>导出座位</p>
         </el-button>
-        <el-button type="primary" :icon="DeleteFilled" style="margin-top: 3.5px">
+        <el-button type="primary" :icon="DeleteFilled" @click="restStore" style="margin-top: 3.5px">
           <p>清空数据</p>
         </el-button>
       </div>
@@ -26,11 +26,11 @@
           <div class="seat-main-scrollbar-drag">
             <VueDraggable
                 class="seat-main-scrollbar-drag-drag"
-                v-for="(seat,index) in stu_list_none"
+                v-for="(seat,index) in seat_list"
                 animation="150"
                 group="stu"
                 ghostClass="ghost"
-                v-model="stu_list_none[index]">
+                v-model="seat_list[index]">
               <div v-for="item in seat" class="seat-main-scrollbar-drag-card">
                 <span>{{ item.姓名 }}</span>
               </div>
@@ -51,35 +51,48 @@ import {useAllData} from './../store/index.js'
 import {storeToRefs} from 'pinia'
 import {exportToWord} from './../utils/export-seats.js'
 
-const row = ref(6)  // 行数
-const column = ref(6)  // 列数
+const allDataStore = useAllData()
+const {stu_list, is_upload, seat_list, stu_list_length} = storeToRefs(allDataStore);  // 响应式解构数据
+const row = ref(7)
+const column = ref(6)
 const row_column = computed(() => row.value * column.value)  // 座次数量
-const stu_list_none = ref()  // 座位占位数组
-const {stu_list, is_upload, stu_list_length} = storeToRefs(useAllData());  // 响应式解构数据
-let is_seat = true  // 是否随机排座的标记
 
-// 监听 row_column 变化，更新 stu_list_none
+let is_seat = true  // 是否随机排座的标记
+console.log(seat_list.value)
+// 监听 row_column 变化，更新 seat_list
 watch(
     () => row_column.value,
     (newVal, oldValue) => {
+      console.log('监听到变化', newVal, oldValue)
       if (newVal > oldValue) {
         const len = newVal - oldValue
-        stu_list_none.value.push(...Array(len).fill([]))
+        seat_list.value.push(...Array(len).fill([]))
       } else if (newVal < oldValue) {
-        const len = newVal - oldValue  // 复负数
+        const len = newVal - oldValue  // 负数
         const len2 = oldValue - newVal  // 正数
-        stu_list_none.value.splice(len, len2)
+        seat_list.value.splice(len, len2)
       } else {
-        stu_list_none.value = Array.from({length: newVal}, () => []);
+        if (seat_list.value.length === 0) {
+          seat_list.value = Array.from({length: newVal}, () => []);
+        }
       }
     },
     {immediate: true}
 );
 
+const restStore = () => {
+  allDataStore.$reset();
+  row.value = 7;
+  column.value = 6;
+  setTimeout(() => {
+    seat_list.value = Array.from({length: 42}, () => []);
+    console.log('重置所有参数成功', row.value, column.value, seat_list.value.length)
+  }, 500)
+}
 // 到处座位
 const exportSeats = () => {
-  if (stu_list_none.value.length > 0 && is_upload.value === false) {
-    exportToWord(stu_list_none.value, row.value, column.value)
+  if (seat_list.value.length > 0 && is_upload.value === false) {
+    exportToWord(seat_list.value, row.value, column.value)
   }
 
 }
@@ -87,8 +100,8 @@ const exportSeats = () => {
 const randomSeat = () => {
   // 数组随机排序算法
   const setRandomSeat = () => {
-    const stu_list_none_flat = toRaw(stu_list_none.value.flat())
-    stu_list.value.push(...stu_list_none_flat)
+    const seat_list_flat = toRaw(seat_list.value.flat())
+    stu_list.value.push(...seat_list_flat)
 
     const arr = stu_list.value.map(item => [item])
     if (arr.length !== row_column.value && stu_list_length.value.length !== 0) {
@@ -102,7 +115,7 @@ const randomSeat = () => {
       arr[index] = arr[len - ii - 1];
       arr[len - ii - 1] = temp;
     }
-    stu_list_none.value = arr
+    seat_list.value = arr
     stu_list.value.length = 0
   }
   if (stu_list_length.value !== 0 && is_seat === true) {
