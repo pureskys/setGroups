@@ -44,7 +44,7 @@
 </template>
 
 <script setup>
-import {computed, ref, toRaw, watch} from "vue";
+import {computed, toRaw, watch} from "vue";
 import {DeleteFilled, Grid, Promotion} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from './../store/index.js'
@@ -52,9 +52,7 @@ import {storeToRefs} from 'pinia'
 import {exportToWord} from './../utils/export-seats.js'
 
 const allDataStore = useAllData()
-const {stu_list, is_upload, seat_list, stu_list_length} = storeToRefs(allDataStore);  // 响应式解构数据
-const row = ref(7)
-const column = ref(6)
+const {stu_list, is_upload, seat_list, stu_list_length, row, column} = storeToRefs(allDataStore);  // 响应式解构数据
 const row_column = computed(() => row.value * column.value)  // 座次数量
 
 let is_seat = true  // 是否随机排座的标记
@@ -84,6 +82,7 @@ const restStore = () => {
   allDataStore.$reset();
   row.value = 7;
   column.value = 6;
+  is_seat = true
   setTimeout(() => {
     seat_list.value = Array.from({length: 42}, () => []);
     console.log('重置所有参数成功', row.value, column.value, seat_list.value.length)
