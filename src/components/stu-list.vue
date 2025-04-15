@@ -21,7 +21,7 @@
             </div>
             <template #tip>
               <div class="el-upload__tip">
-                仅支持导入excel且至少有一列表头为“姓名” 注意：不要有任何合并的的单元格
+                仅支持导入excel且至少有一列表头为“姓名” 注意：不要有任何合并的单元格
               </div>
             </template>
           </el-upload>
