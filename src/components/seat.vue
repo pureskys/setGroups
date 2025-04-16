@@ -56,12 +56,10 @@ const {stu_list, is_upload, seat_list, stu_list_length, row, column} = storeToRe
 const row_column = computed(() => row.value * column.value)  // 座次数量
 
 let is_seat = true  // 是否随机排座的标记
-console.log(seat_list.value)
 // 监听 row_column 变化，更新 seat_list
 watch(
     () => row_column.value,
     (newVal, oldValue) => {
-      console.log('监听到变化', newVal, oldValue)
       if (newVal > oldValue) {
         const len = newVal - oldValue
         seat_list.value.push(...Array(len).fill([]))
