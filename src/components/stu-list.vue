@@ -7,11 +7,11 @@
       <el-scrollbar class="list-scrollbar">
         <div v-if="stu_list.length === 0 && is_upload === true">
           <el-upload
-              class="upload-demo"
-              accept=".xlsx,.xls"
-              :drag="true"
               :auto-upload="false"
+              :drag="true"
               :on-change="upload_file"
+              accept=".xlsx,.xls"
+              class="upload-demo"
           >
             <el-icon class="el-icon--upload">
               <upload-filled/>
@@ -26,14 +26,14 @@
             </template>
           </el-upload>
         </div>
-        <VueDraggable animation="150"
-                      v-else
-                      ghostClass="ghost"
+        <VueDraggable v-else
+                      v-model="stu_list "
+                      animation="150"
                       class="drag"
-                      group="stu"
-                      v-model="stu_list ">
-          <div class="stu" v-for="item in stu_list"
-               :key="item.id">
+                      ghostClass="ghost"
+                      group="stu">
+          <div v-for="item in stu_list" :key="item.id"
+               class="stu">
             <span>{{ item.姓名 }}</span>
           </div>
         </VueDraggable>

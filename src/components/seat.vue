@@ -4,18 +4,18 @@
       <h2 style="white-space: nowrap">座位布局</h2>
       <span class="seat-header-line"></span>
       <span>行:</span>
-      <el-input v-model.number="row" type="number" min="1" class="seat-header-input"/>
+      <el-input v-model.number="row" class="seat-header-input" min="1" type="number"/>
       <span>列:</span>
-      <el-input v-model.number="column" type="number" min="1" class="seat-header-input"/>
+      <el-input v-model.number="column" class="seat-header-input" min="1" type="number"/>
       <div class="seat-header-bnt">
-        <el-button class="but-random" type="primary" :icon="Grid" @click="randomSeat"
-                   style="margin-top: 3.5px;margin-left: 5px">
+        <el-button :icon="Grid" class="but-random" style="margin-top: 3.5px;margin-left: 5px" type="primary"
+                   @click="randomSeat">
           <p>随机排座</p>
         </el-button>
-        <el-button type="primary" :icon="Promotion" @click="exportSeats" style="margin-top: 3.5px">
+        <el-button :icon="Promotion" style="margin-top: 3.5px" type="primary" @click="exportSeats">
           <p>导出座位</p>
         </el-button>
-        <el-button type="primary" :icon="DeleteFilled" @click="restStore" style="margin-top: 3.5px">
+        <el-button :icon="DeleteFilled" style="margin-top: 3.5px" type="primary" @click="restStore">
           <p>清空数据</p>
         </el-button>
       </div>
@@ -25,12 +25,12 @@
         <el-scrollbar class="seat-main-scrollbar">
           <div class="seat-main-scrollbar-drag">
             <VueDraggable
-                class="seat-main-scrollbar-drag-drag"
                 v-for="(seat,index) in seat_list"
+                v-model="seat_list[index]"
                 animation="150"
-                group="stu"
+                class="seat-main-scrollbar-drag-drag"
                 ghostClass="ghost"
-                v-model="seat_list[index]">
+                group="stu">
               <div v-for="item in seat" class="seat-main-scrollbar-drag-card">
                 <span>{{ item.姓名 }}</span>
               </div>

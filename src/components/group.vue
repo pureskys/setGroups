@@ -1,13 +1,12 @@
 <template>
   <div class="group">
-    待开发<br/>
-    后续该区域将作为学生小组功能区
+    <header class="group-header">
+      <h2 style="white-space: nowrap">学生分组</h2>
+    </header>
   </div>
 </template>
 
 <script setup>
-// 在 Vue 组件或任何 JS 文件中
-console.log(import.meta.env);
 </script>
 
 <style lang="scss" scoped>
@@ -18,6 +17,10 @@ console.log(import.meta.env);
   margin: 10px;
   @media (max-width: 600px) {
     height: 100%;
+  }
+
+  .group-header {
+    padding: 10px;
   }
 }
 </style>
