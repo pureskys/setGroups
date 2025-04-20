@@ -2,10 +2,10 @@
   <div class="seat">
     <!-- 禁用时的遮罩层 -->
     <div v-if="group_switch" class="disabled-overlay">
-      <div></div>
+      <div style="flex: 2; "></div>
       <div class="disabled-overlay-stuList">
         <el-scrollbar>
-          <div style="height: 94vh">
+          <div class="disabled-overlay-stuList-scrDiv">
             <VueDraggable
                 v-model="stu_list_temp "
                 :group="{name:'stu_temp', pull:'clone' ,put:false}"
@@ -160,8 +160,9 @@ const randomSeat = () => {
 
 <style lang="scss" scoped>
 .disabled-overlay {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
   position: absolute;
   top: 0;
   left: 0;
@@ -174,13 +175,22 @@ const randomSeat = () => {
   cursor: not-allowed;
 
   .disabled-overlay-stuList {
+    flex: 1;
     height: 100%;
     min-width: 300px;
     border-radius: 8px;
     background-color: white;
     box-shadow: 0 0 5px #d1d1d1;
 
+    .disabled-overlay-stuList-scrDiv {
+      height: 100%;
+      @media (max-width: 600px) {
+        height: 100%;
+      }
+    }
+
     .disabled-overlay-stuList-drag {
+      height: 100%;
       padding: 6px;
       display: grid;
       gap: 5px;
