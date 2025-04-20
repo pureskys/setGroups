@@ -4,13 +4,13 @@
     <div v-if="!group_switch" class="disabled-overlay"></div>
 
     <header class="group-header">
-      <el-switch class="switch_bnt"
-                 v-model="group_switch"
+      <el-switch v-model="group_switch"
                  :active-action-icon="Select"
                  :inactive-action-icon="CloseBold"
+                 class="switch_bnt"
       />
       <h2 style="white-space: nowrap">学生分组</h2>
-      <el-button class="group-header-but" :icon="Promotion" type="primary">
+      <el-button :icon="Promotion" class="group-header-but" type="primary" @click="exportALLGroup">
         <p>导出All分组</p>
       </el-button>
     </header>
@@ -18,18 +18,18 @@
       <div class="group-main-card">
         <el-input
             v-model="group_name"
-            placeholder="分组名称"
             clearable
+            placeholder="分组名称"
         />
         <el-scrollbar style="width: 100%;">
           <VueDraggable
               v-model="group_list"
-              class="group-main-card-drag"
+              :group="{name:'stu_temp',pull:false,put:true}"
               animation="150"
-              ghostClass="ghost"
-              :group="{name:'stu',pull:false,put:true}">
+              class="group-main-card-drag"
+              ghostClass="ghost">
 
-            <div class="group-main-card-drag-tip" v-if="group_list.length === 0">拖拽到此进行分组
+            <div v-if="group_list.length === 0" class="group-main-card-drag-tip">拖拽到此进行分组
             </div>
 
             <div v-for="item in group_list" class="group-main-card-drag-item">
@@ -42,7 +42,7 @@
             </div>
           </VueDraggable>
         </el-scrollbar>
-        <el-button @click="creatGroup" :icon="Promotion" style="margin-top: 3.5px" type="primary">
+        <el-button :icon="Promotion" style="margin-top: 3.5px" type="primary" @click="creatGroup">
           <p>创建分组</p>
         </el-button>
       </div>
@@ -51,7 +51,7 @@
       <div class="group-foot">
         <div v-for="item in group_data" class="group-foot-item">
           <div>{{ item.group_name }}</div>
-          <el-icon closable @click="removeGroup(item)" class="group-foot-item-closeIcon">
+          <el-icon class="group-foot-item-closeIcon" closable @click="removeGroup(item)">
             <Close/>
           </el-icon>
           <div class="group-foot-item-tag">
@@ -62,7 +62,7 @@
             </div>
           </div>
           <transition>
-            <div class="export-btn">
+            <div class="export-btn" @click="exportGroup(item)">
               <span class="export-btn-text">导出分组</span>
             </div>
           </transition>
@@ -77,19 +77,33 @@ import {Close, CloseBold, Promotion, Select} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from "../store/index.js";
 import {storeToRefs} from 'pinia'
-import {watch} from "vue";
+import {exportGroupToWord} from './../utils/export-group.js';
+import {exportAllGroupsToWord} from './../utils/exprot-all-group.js';
 
 const allDataStore = useAllData()
-const {group_name, group_list, group_data, group_switch, group_control} = storeToRefs(allDataStore);  // 响应式解构数据
+const {group_name, group_list, group_data, group_switch} = storeToRefs(allDataStore);  // 响应式解构数据
 
-watch(group_switch, (newVal) => {
-  if (newVal === true) {
-    group_control.value = {name:'stu',pull:'clone',put:false};
+// 导出全部分组方法
+const exportALLGroup = async () => {
+  if (group_data.value.length !== 0) {
+    try {
+      await exportAllGroupsToWord(group_data.value);
+    } catch (err) {
+      console.log(err)
+    }
   }
-  else {
-    group_control.value = {name:'stu',pull:true,put:true};
+
+}
+
+// 导出分组方法
+const exportGroup = async (data) => {
+  try {
+    await exportGroupToWord(data)
+  } catch (err) {
+    console.log(err)
   }
-})
+
+}
 // 创建分组方法
 const creatGroup = () => {
   if (!group_name.value || !group_list.value.length) {
@@ -120,6 +134,7 @@ const handleClose = (tag) => {
   right: 0;
   bottom: 0;
   background-color: rgba(200, 200, 200, 0.3);
+  border-radius: 8px;
   z-index: 10;
   cursor: not-allowed;
 }
@@ -153,6 +168,11 @@ const handleClose = (tag) => {
 
     .group-header-but {
       margin: 0;
+      @media (max-width: 1150px) {
+        p {
+          display: none;
+        }
+      }
     }
   }
 

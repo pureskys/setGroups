@@ -1,5 +1,28 @@
 <template>
   <div class="seat">
+    <!-- 禁用时的遮罩层 -->
+    <div v-if="group_switch" class="disabled-overlay">
+      <div></div>
+      <div class="disabled-overlay-stuList">
+        <el-scrollbar>
+          <div style="height: 94vh">
+            <VueDraggable
+                v-model="stu_list_temp "
+                :group="{name:'stu_temp', pull:'clone' ,put:false}"
+                animation="150"
+                class="disabled-overlay-stuList-drag"
+                ghostClass="ghost">
+              <div v-for="item in stu_list_temp" :key="item.id" class="disabled-overlay-stuList-drag-stuItem">
+                <span>{{ item.姓名 }}</span>
+              </div>
+            </VueDraggable>
+          </div>
+
+        </el-scrollbar>
+      </div>
+
+    </div>
+
     <header class="seat-header">
       <h2 style="white-space: nowrap">座位布局</h2>
       <span class="seat-header-line"></span>
@@ -8,7 +31,7 @@
       <span>列:</span>
       <el-input v-model.number="column" class="seat-header-input" min="1" type="number"/>
       <div class="seat-header-bnt">
-        <el-button :icon="Grid" class="but-random" style="margin-top: 3.5px;margin-left: 5px" type="primary"
+        <el-button :icon="Grid" style="margin-top: 3.5px;margin-left: 5px" type="primary"
                    @click="randomSeat">
           <p>随机排座</p>
         </el-button>
@@ -30,7 +53,7 @@
                 animation="150"
                 class="seat-main-scrollbar-drag-drag"
                 ghostClass="ghost"
-                :group="group_control">
+                group="stu">
               <div v-for="item in seat" class="seat-main-scrollbar-drag-card">
                 <span>{{ item.姓名 }}</span>
               </div>
@@ -52,7 +75,16 @@ import {storeToRefs} from 'pinia'
 import {exportToWord} from './../utils/export-seats.js'
 
 const allDataStore = useAllData()
-const {stu_list, is_upload, seat_list, stu_list_length, row, column ,group_control} = storeToRefs(allDataStore);  // 响应式解构数据
+const {
+  stu_list,
+  is_upload,
+  seat_list,
+  stu_list_length,
+  row,
+  column,
+  group_switch,
+  stu_list_temp
+} = storeToRefs(allDataStore);  // 响应式解构数据
 const row_column = computed(() => row.value * column.value)  // 座次数量
 
 let is_seat = true  // 是否随机排座的标记
@@ -86,7 +118,7 @@ const restStore = () => {
     console.log('重置所有参数成功', row.value, column.value, seat_list.value.length)
   }, 500)
 }
-// 到处座位
+// 导出座位
 const exportSeats = () => {
   if (seat_list.value.length > 0 && is_upload.value === false) {
     exportToWord(seat_list.value, row.value, column.value)
@@ -127,7 +159,49 @@ const randomSeat = () => {
 </script>
 
 <style lang="scss" scoped>
+.disabled-overlay {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  backdrop-filter: blur(8px); /* 添加模糊效果 */
+  -webkit-backdrop-filter: blur(5px); /* 为了兼容 Safari */
+  z-index: 10;
+  cursor: not-allowed;
+
+  .disabled-overlay-stuList {
+    height: 100%;
+    min-width: 300px;
+    border-radius: 8px;
+    background-color: white;
+    box-shadow: 0 0 5px #d1d1d1;
+
+    .disabled-overlay-stuList-drag {
+      padding: 6px;
+      display: grid;
+      gap: 5px;
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    .disabled-overlay-stuList-drag-stuItem {
+      display: flex;
+      margin: 3px;
+      box-shadow: 0 0 5px #d1d1d1;
+      justify-content: center;
+      align-items: center;
+      border-radius: 8px;
+      height: 33px;
+      cursor: pointer;
+    }
+  }
+}
+
 .seat {
+  position: relative;
   display: flex;
   flex-direction: column;
   box-shadow: 0 0 5px #d1d1d1;
@@ -138,9 +212,6 @@ const randomSeat = () => {
     width: 100vw;
     height: 100%;
     margin: 10px 0;
-    .but-random {
-      display: none;
-    }
   }
 
   .seat-header {

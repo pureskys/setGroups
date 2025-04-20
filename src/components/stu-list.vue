@@ -1,5 +1,8 @@
 <template>
   <div class="stu-list">
+    <!-- 禁用时的遮罩层 -->
+    <div v-if="group_switch" class="disabled-overlay"></div>
+
     <header class="stu-head">
       <h2>学生名单</h2>
     </header>
@@ -31,7 +34,7 @@
                       animation="150"
                       class="drag"
                       ghostClass="ghost"
-                      :group="group_control">
+                      group="stu">
           <div v-for="item in stu_list" :key="item.id"
                class="stu">
             <span>{{ item.姓名 }}</span>
@@ -49,7 +52,7 @@ import {storeToRefs} from "pinia";
 import {UploadFilled} from "@element-plus/icons-vue";
 import {readFile, sheetToJson} from './../utils/xlsl-tools.js'
 
-const {stu_list, is_upload, stu_list_length, group_control} = storeToRefs(useAllData());  // 响应式解构store数据
+const {stu_list, is_upload, stu_list_length, group_switch, stu_list_temp} = storeToRefs(useAllData());  // 响应式解构store数据
 
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
@@ -59,7 +62,8 @@ const upload_file = async (file) => {
   try {
     const result = await sheetToJson(data)
     console.log('获取的sheet数据:', result)
-    stu_list.value = result;
+    stu_list.value = structuredClone(result);
+    stu_list_temp.value = structuredClone(result)
     is_upload.value = false;
     stu_list_length.value = result.length
   } catch (err) {
@@ -73,7 +77,21 @@ const upload_file = async (file) => {
 </script>
 
 <style lang="scss" scoped>
+.disabled-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  backdrop-filter: blur(8px); /* 添加模糊效果 */
+  -webkit-backdrop-filter: blur(5px); /* 为了兼容 Safari */
+  z-index: 10;
+  cursor: not-allowed;
+}
+
 .stu-list {
+  position: relative;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
