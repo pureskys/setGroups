@@ -1,12 +1,17 @@
 <template>
   <div class="group">
+    <!-- 禁用时的遮罩层 -->
+    <div v-if="!group_switch" class="disabled-overlay"></div>
+
     <header class="group-header">
+      <el-switch class="switch_bnt"
+                 v-model="group_switch"
+                 :active-action-icon="Select"
+                 :inactive-action-icon="CloseBold"
+      />
       <h2 style="white-space: nowrap">学生分组</h2>
       <el-button class="group-header-but" :icon="Promotion" type="primary">
         <p>导出All分组</p>
-      </el-button>
-      <el-button class="group-header-but" :icon="Promotion" type="primary">
-        <p>清空分组</p>
       </el-button>
     </header>
     <main class="group-main">
@@ -37,19 +42,22 @@
             </div>
           </VueDraggable>
         </el-scrollbar>
-        <el-button :icon="Promotion" style="margin-top: 3.5px" type="primary">
+        <el-button @click="creatGroup" :icon="Promotion" style="margin-top: 3.5px" type="primary">
           <p>创建分组</p>
         </el-button>
       </div>
     </main>
     <el-scrollbar>
       <div class="group-foot">
-        <div v-for="i in 100" class="group-foot-item">
-          <div>英语背书小组</div>
+        <div v-for="item in group_data" class="group-foot-item">
+          <div>{{ item.group_name }}</div>
+          <el-icon closable @click="removeGroup(item)" class="group-foot-item-closeIcon">
+            <Close/>
+          </el-icon>
           <div class="group-foot-item-tag">
-            <div v-for="i in 6">
+            <div v-for="item_item in item.group_list">
               <el-tag>
-                指数大
+                {{ item_item.姓名 }}
               </el-tag>
             </div>
           </div>
@@ -65,20 +73,65 @@
 </template>
 
 <script setup>
-import {ref} from "vue";
-import {Promotion} from "@element-plus/icons-vue";
+import {Close, CloseBold, Promotion, Select} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
+import {useAllData} from "../store/index.js";
+import {storeToRefs} from 'pinia'
+import {watch} from "vue";
 
-const group_name = ref()  // 小组名称
-const group_list = ref([])  // 小组数组
+const allDataStore = useAllData()
+const {group_name, group_list, group_data, group_switch, group_control} = storeToRefs(allDataStore);  // 响应式解构数据
 
+watch(group_switch, (newVal) => {
+  if (newVal === true) {
+    group_control.value = {name:'stu',pull:'clone',put:false};
+  }
+  else {
+    group_control.value = {name:'stu',pull:true,put:true};
+  }
+})
+// 创建分组方法
+const creatGroup = () => {
+  if (!group_name.value || !group_list.value.length) {
+    return
+  }
+  const group_temp = {group_name: group_name.value, group_list: group_list.value};
+  group_data.value.unshift(group_temp)
+  group_name.value = null;
+  group_list.value = [];
+}
+
+// 删除分组方法
+const removeGroup = (item) => {
+  group_data.value.splice(group_data.value.indexOf(item), 1)
+}
+
+// 删除待分组标签方法
 const handleClose = (tag) => {
   group_list.value.splice(group_list.value.indexOf(tag), 1)
 }
 </script>
 
 <style lang="scss" scoped>
+.disabled-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(200, 200, 200, 0.3);
+  z-index: 10;
+  cursor: not-allowed;
+}
+
+.switch_bnt {
+  pointer-events: auto;
+  position: relative;
+  z-index: 11;
+}
+
 .group {
+  position: relative;
   display: flex;
   flex-direction: column;
   height: 95vh;
@@ -152,6 +205,7 @@ const handleClose = (tag) => {
     grid-template-columns: repeat(2, 1fr);
 
     .group-foot-item {
+      position: relative;
       min-height: 150px;
       user-select: none;
       margin: 4px 0;
@@ -161,6 +215,21 @@ const handleClose = (tag) => {
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 0 10px #d1d1d1;
+
+      &:hover {
+        .group-foot-item-closeIcon {
+          opacity: 1;
+        }
+      }
+
+      .group-foot-item-closeIcon {
+        position: absolute;
+        transition: all 0.5s ease;
+        top: 5px;
+        right: 5px;
+        opacity: 0;
+      }
+
       .export-btn {
         display: flex;
         align-items: center;
@@ -169,10 +238,14 @@ const handleClose = (tag) => {
         width: 100%;
         background-color: #58d9e4;
         border-radius: 0 0 5px 5px;
-        &:hover .export-btn-text {
-          opacity: 1;
+
+        &:hover {
+          .export-btn-text {
+            opacity: 1;
+          }
         }
-        .export-btn-text{
+
+        .export-btn-text {
           opacity: 0;
           font-size: 14px;
           color: white;
@@ -185,7 +258,7 @@ const handleClose = (tag) => {
         display: grid;
         padding: 4px;
         grid-template-columns: repeat(3, 1fr);;
-        grid-template-rows: repeat(3, 1fr) ;
+        grid-template-rows: repeat(3, 1fr);
         gap: 2px;
       }
     }

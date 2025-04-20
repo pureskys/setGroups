@@ -30,7 +30,7 @@
                 animation="150"
                 class="seat-main-scrollbar-drag-drag"
                 ghostClass="ghost"
-                group="stu">
+                :group="group_control">
               <div v-for="item in seat" class="seat-main-scrollbar-drag-card">
                 <span>{{ item.姓名 }}</span>
               </div>
@@ -52,7 +52,7 @@ import {storeToRefs} from 'pinia'
 import {exportToWord} from './../utils/export-seats.js'
 
 const allDataStore = useAllData()
-const {stu_list, is_upload, seat_list, stu_list_length, row, column} = storeToRefs(allDataStore);  // 响应式解构数据
+const {stu_list, is_upload, seat_list, stu_list_length, row, column ,group_control} = storeToRefs(allDataStore);  // 响应式解构数据
 const row_column = computed(() => row.value * column.value)  // 座次数量
 
 let is_seat = true  // 是否随机排座的标记

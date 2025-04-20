@@ -31,7 +31,7 @@
                       animation="150"
                       class="drag"
                       ghostClass="ghost"
-                      group="stu">
+                      :group="group_control">
           <div v-for="item in stu_list" :key="item.id"
                class="stu">
             <span>{{ item.姓名 }}</span>
@@ -49,7 +49,7 @@ import {storeToRefs} from "pinia";
 import {UploadFilled} from "@element-plus/icons-vue";
 import {readFile, sheetToJson} from './../utils/xlsl-tools.js'
 
-const {stu_list, is_upload, stu_list_length} = storeToRefs(useAllData());  // 响应式解构store数据
+const {stu_list, is_upload, stu_list_length, group_control} = storeToRefs(useAllData());  // 响应式解构store数据
 
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
