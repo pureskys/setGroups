@@ -1,8 +1,8 @@
 <template>
   <div class="group">
-    <!-- 禁用时的遮罩层 -->
+    <!-- 禁用时的遮罩层开始 -->
     <div v-if="!group_switch" class="disabled-overlay"></div>
-
+    <!-- 禁用时的遮罩层结束-->
     <header class="group-header">
       <el-switch v-model="group_switch"
                  :active-action-icon="Select"
@@ -14,7 +14,32 @@
         <p>导出All分组</p>
       </el-button>
     </header>
-    <main class="group-main">
+    <main class="group-main relative">
+      <!--    删除组件的遮罩层开始-->
+      <transition
+          enter-active-class="transition-opacity duration-300"
+          enter-from-class="opacity-0"
+          enter-to-class="opacity-100"
+          leave-active-class="transition-opacity duration-300"
+          leave-from-class="opacity-100"
+          leave-to-class="opacity-0"
+      >
+        <div v-if="_isRemoveGroup"
+             class=" bg-white absolute inset-[10px] z-3 flex justify-center items-center">
+          <div class="flex justify-center items-center flex-col">
+            <el-icon size="38" color="#ed3535">
+              <Delete/>
+            </el-icon>
+            <div class="text-gray-500 text-[15px]">拖动到此删除分组</div>
+          </div>
+          <VueDraggable v-model="remove_group"
+                        group="stu"
+                        class="absolute z-4 w-full h-full ">
+
+          </VueDraggable>
+        </div>
+      </transition>
+      <!--    删除组件的遮罩层结束-->
       <div class="group-main-card">
         <el-input
             v-model="group_name"
@@ -48,41 +73,71 @@
       </div>
     </main>
     <el-scrollbar>
-      <div class="group-foot">
-        <div v-for="item in group_data" class="group-foot-item">
-          <div>{{ item.group_name }}</div>
-          <el-icon class="group-foot-item-closeIcon" closable @click="removeGroup(item)">
-            <Close/>
-          </el-icon>
-          <div class="group-foot-item-tag">
-            <div v-for="item_item in item.group_list">
-              <el-tag>
-                {{ item_item.姓名 }}
-              </el-tag>
-            </div>
+      <div>
+        <VueDraggable
+            v-model="group_data"
+            @start="groupDragStart('_is_put_no')"
+            @end="groupDragEnd"
+            :group="{name:'stu',pull:true,put:false}"
+            animation="150"
+            ghostClass="ghost"
+            class="group-foot">
+          <div v-for="item in group_data" class="group-foot-item">
+            <div class="text-gray-700 font-medium">{{ item.group_name }}</div>
+            <el-icon class="group-foot-item-closeIcon" closable>
+              <EditPen/>
+            </el-icon>
+            <VueDraggable class="grid grid-cols-3 grid-rows-3 gap-0.5 min-h-20 min-w-20"
+                          v-model="item.group_list"
+                          :group="{name:'stu',pull:true,put:_is_put}"
+                          @start="groupDragStart"
+                          @end="groupDragEnd"
+                          animation="150"
+                          ghostClass="ghost">
+              <div class="m-1" v-for="item_item in item.group_list">
+                <el-tag>
+                  {{ item_item.姓名 }}
+                </el-tag>
+              </div>
+            </VueDraggable>
+            <transition>
+              <div class="export-btn" @click="exportGroup(item)">
+                <span class="export-btn-text">导出分组</span>
+              </div>
+            </transition>
           </div>
-          <transition>
-            <div class="export-btn" @click="exportGroup(item)">
-              <span class="export-btn-text">导出分组</span>
-            </div>
-          </transition>
-        </div>
+        </VueDraggable>
       </div>
     </el-scrollbar>
   </div>
 </template>
 
 <script setup>
-import {Close, CloseBold, Promotion, Select} from "@element-plus/icons-vue";
+import {CloseBold, Delete, EditPen, Promotion, Select} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from "../store/index.js";
 import {storeToRefs} from 'pinia'
 import {exportGroupToWord} from './../utils/export-group.js';
 import {exportAllGroupsToWord} from './../utils/exprot-all-group.js';
+import {ref} from "vue";
 
 const allDataStore = useAllData()
 const {group_name, group_list, group_data, group_switch} = storeToRefs(allDataStore);  // 响应式解构数据
-
+const _isRemoveGroup = ref(false)  // 是否展示删除组件
+const remove_group = []  // 将要移除的分组
+const _is_put = ref(true)
+// 分组开始拖拽方法
+const groupDragStart = (key) => {
+  if (key === '_is_put_no') {
+    _is_put.value = false
+  }
+  _isRemoveGroup.value = true
+}
+// 分组结束拖拽方法
+const groupDragEnd = () => {
+  _isRemoveGroup.value = false
+  _is_put.value = true
+}
 // 导出全部分组方法
 const exportALLGroup = async () => {
   if (group_data.value.length !== 0) {
@@ -110,14 +165,9 @@ const creatGroup = () => {
     return
   }
   const group_temp = {group_name: group_name.value, group_list: group_list.value};
-  group_data.value.unshift(group_temp)
+  group_data.value.push(group_temp)
   group_name.value = null;
   group_list.value = [];
-}
-
-// 删除分组方法
-const removeGroup = (item) => {
-  group_data.value.splice(group_data.value.indexOf(item), 1)
 }
 
 // 删除待分组标签方法
@@ -227,6 +277,7 @@ const handleClose = (tag) => {
     .group-foot-item {
       position: relative;
       min-height: 150px;
+      min-width: 179px;
       user-select: none;
       margin: 4px 0;
       border-radius: 5px;
@@ -252,6 +303,7 @@ const handleClose = (tag) => {
 
       .export-btn {
         display: flex;
+        margin-top: 5px;
         align-items: center;
         justify-content: center;
         font-size: 15px;
@@ -273,14 +325,6 @@ const handleClose = (tag) => {
         }
       }
 
-      .group-foot-item-tag {
-        flex: 1;
-        display: grid;
-        padding: 4px;
-        grid-template-columns: repeat(3, 1fr);;
-        grid-template-rows: repeat(3, 1fr);
-        gap: 2px;
-      }
     }
   }
 }
