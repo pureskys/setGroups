@@ -35,7 +35,7 @@
                       class="drag"
                       ghostClass="ghost"
                       group="stu">
-          <div v-for="item in stu_list" :key="item.id"
+          <div v-for="item in stu_list"
                class="stu">
             <span>{{ item.姓名 }}</span>
           </div>

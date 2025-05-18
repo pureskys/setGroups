@@ -86,20 +86,56 @@ const {
   stu_list_temp
 } = storeToRefs(allDataStore);  // 响应式解构数据
 const row_column = computed(() => row.value * column.value)  // 座次数量
-
-let is_seat = true  // 是否随机排座的标记
-// 监听 row_column 变化，更新 seat_list
+// 监听 row 变化，更新 seat_list
 watch(
-    () => row_column.value,
+    () => row.value,
     (newVal, oldValue) => {
       if (newVal > oldValue) {
-        const len = newVal - oldValue
+        const len = newVal * column.value - oldValue * column.value
         seat_list.value.push(...Array(len).fill([]))
       } else if (newVal < oldValue) {
-        const len = newVal - oldValue  // 负数
-        const len2 = oldValue - newVal  // 正数
-        seat_list.value.splice(len, len2)
-      } else {
+        const len = newVal * column.value - oldValue * column.value  // 负数
+        const len2 = oldValue * column.value - newVal * column.value  // 正数
+        let seat_list_row_tem = seat_list.value.splice(len, len2)
+        // 转移被删除的学生
+        seat_list_row_tem.flat(Infinity).forEach((item) => {
+          stu_list.value.push(item);
+        })
+      }
+    },
+    {immediate: true}
+);
+// 监听column变化，更新seat_list
+watch(
+    () => column.value,
+    (newVal, oldValue) => {
+      if (newVal > oldValue) {
+        let seat_list_temp = JSON.parse(JSON.stringify(seat_list.value))
+        let len2 = []  // 标记需要添加位置的下标
+        for (let i = 0; i < row.value; i++) {
+          len2.push((oldValue * (i + 1)))
+        }
+        for (const pos of [...len2].sort((a, b) => b - a)) {
+          seat_list_temp.splice(pos, 0, []);
+        }
+        seat_list.value = seat_list_temp;
+      } else if (newVal < oldValue) {
+        let len = []  // 标记需要删除位置的下标
+        let seat_list_temp = JSON.parse(JSON.stringify(seat_list.value))  // 缓存座位数据
+        let deletedItems = []  // 缓存被删除的座位
+        for (let i = 0; i < row.value; i++) {
+          len.push((oldValue * (i + 1))-1)
+        }
+        for (const pos of [...len].sort((a, b) => b - a)) {
+          const seat_list_temp_data =  seat_list_temp.splice(pos, 1)
+          deletedItems.push(seat_list_temp_data);
+        }
+        seat_list.value = seat_list_temp;  // 设置当前座位
+        // 转移被删除的学生
+        deletedItems.flat(Infinity).forEach((item) => {
+          stu_list.value.push(item);
+        })
+      }else {
         if (seat_list.value.length === 0) {
           seat_list.value = Array.from({length: newVal}, () => []);
         }
@@ -107,12 +143,10 @@ watch(
     },
     {immediate: true}
 );
-
 const restStore = () => {
   allDataStore.$reset();
   row.value = 7;
   column.value = 6;
-  is_seat = true
   setTimeout(() => {
     seat_list.value = Array.from({length: 42}, () => []);
     console.log('重置所有参数成功', row.value, column.value, seat_list.value.length)
@@ -132,11 +166,12 @@ const randomSeat = () => {
     const seat_list_flat = toRaw(seat_list.value.flat())
     stu_list.value.push(...seat_list_flat)
 
-    const arr = stu_list.value.map(item => [item])
+    const arr = stu_list.value.map(item => [item])  // 准备排序的数组
     if (arr.length !== row_column.value && stu_list_length.value.length !== 0) {
-      const len = row_column.value - arr.length
-      arr.push(...Array(len).fill([]))
+      const len = Math.abs(row_column.value - arr.length)
+      arr.push(...Array.from({ length: len }, () => [])	)
     }
+
     const len = arr.length;
     for (let ii = 0; ii < len - 1; ii++) {
       const index = parseInt(Math.random() * (len - ii));
@@ -147,9 +182,8 @@ const randomSeat = () => {
     seat_list.value = arr
     stu_list.value.length = 0
   }
-  if (stu_list_length.value !== 0 && is_seat === true) {
+  if (stu_list_length.value !== 0) {
     row.value = Math.ceil(stu_list_length.value / column.value)
-    is_seat = false
   }
   setTimeout(() => {
     setRandomSeat()
