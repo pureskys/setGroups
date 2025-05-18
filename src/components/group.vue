@@ -14,33 +14,42 @@
         <p>导出All分组</p>
       </el-button>
     </header>
-    <main class="group-main relative">
-      <!--    删除组件的遮罩层开始-->
-      <transition
-          enter-active-class="transition-opacity duration-300"
-          enter-from-class="opacity-0"
-          enter-to-class="opacity-100"
-          leave-active-class="transition-opacity duration-300"
-          leave-from-class="opacity-100"
-          leave-to-class="opacity-0"
-      >
-        <div v-if="_isRemoveGroup"
-             class=" bg-white absolute inset-[10px] z-3 flex justify-center items-center">
-          <div class="flex justify-center items-center flex-col">
-            <el-icon size="38" color="#ed3535">
-              <Delete/>
-            </el-icon>
-            <div class="text-gray-500 text-[15px]">拖动到此删除分组</div>
+    <main class="group-main">
+      <div class="group-main-card relative">
+        <!--    删除组件的遮罩层开始-->
+        <transition
+            enter-active-class="transition-opacity duration-300"
+            enter-from-class="opacity-0"
+            enter-to-class="opacity-100"
+            leave-active-class="transition-opacity duration-300"
+            leave-from-class="opacity-100"
+            leave-to-class="opacity-0"
+        >
+          <div
+              v-if="_isRemoveGroup"
+              class=" bg-white absolute inset-[0px] z-3 flex justify-center items-center rounded-xl"
+              :class="{'border-red-500': enter_remove,  // 红色边框
+                       'shadow-[0_0_10px_rgba(255,50,50,0.8)]': enter_remove  // 边框外发光
+                      }"
+          >
+            <div class="flex justify-center items-center flex-col">
+              <el-icon :class="{'drop-shadow-[0_0_12px_rgba(255,0,0,0.8)]': enter_remove}"
+                       color="#ed3535"
+                       size="38">
+                <Delete/>
+              </el-icon>
+              <div class="text-gray-500 text-[15px]">拖动到此处删除</div>
+            </div>
+            <VueDraggable @dragenter="()=>{enter_remove = false}"
+                          @dragleave="()=>{enter_remove = true}"
+                          v-model="remove_group"
+                          animation="150"
+                          class="absolute z-10 inset-0 opacity-0"
+                          group="stu">
+            </VueDraggable>
           </div>
-          <VueDraggable v-model="remove_group"
-                        group="stu"
-                        class="absolute z-4 w-full h-full ">
-
-          </VueDraggable>
-        </div>
-      </transition>
-      <!--    删除组件的遮罩层结束-->
-      <div class="group-main-card">
+        </transition>
+        <!--    删除组件的遮罩层结束-->
         <el-input
             v-model="group_name"
             clearable
@@ -54,7 +63,8 @@
               class="group-main-card-drag"
               ghostClass="ghost">
 
-            <div v-if="group_list.length === 0" class="group-main-card-drag-tip">拖拽到此进行分组
+            <div v-if="group_list.length === 0" class="group-main-card-drag-tip">
+              拖拽到此进行分组
             </div>
 
             <div v-for="item in group_list" class="group-main-card-drag-item">
@@ -76,33 +86,37 @@
       <div>
         <VueDraggable
             v-model="group_data"
-            @start="groupDragStart('_is_put_no')"
-            @end="groupDragEnd"
             :group="{name:'stu',pull:true,put:false}"
             animation="150"
+            class="group-foot min-w-30 min-h-30"
             ghostClass="ghost"
-            class="group-foot">
+            @end="groupDragEnd"
+            @change="()=>{enter_remove = false}"
+            @start="groupDragStart('_is_put_no')">
           <div v-for="item in group_data" class="group-foot-item">
-            <div class="text-gray-700 font-medium">{{ item.group_name }}</div>
-            <el-icon class="group-foot-item-closeIcon" closable>
-              <EditPen/>
-            </el-icon>
-            <VueDraggable class="grid grid-cols-3 grid-rows-3 gap-0.5 min-h-20 min-w-20"
-                          v-model="item.group_list"
+            <div class="text-gray-700 font-medium">
+              {{ item.group_name }}
+            </div>
+            <VueDraggable v-model="item.group_list"
                           :group="{name:'stu',pull:true,put:_is_put}"
-                          @start="groupDragStart"
-                          @end="groupDragEnd"
                           animation="150"
-                          ghostClass="ghost">
-              <div class="m-1" v-for="item_item in item.group_list">
+                          class="grid grid-cols-3 grid-rows-3 gap-0.5 min-h-20 min-w-20"
+                          ghostClass="ghost"
+                          @end="groupDragEnd"
+                          @start="groupDragStart"
+                          @change="()=>{enter_remove = false}"
+            >
+              <div v-for="item_item in item.group_list" class="m-1">
                 <el-tag>
                   {{ item_item.姓名 }}
                 </el-tag>
               </div>
             </VueDraggable>
             <transition>
-              <div class="export-btn" @click="exportGroup(item)">
-                <span class="export-btn-text">导出分组</span>
+              <div
+                  class="opacity-0 w-full flex justify-center items-center rounded-b-md transition-opacity duration-300 bg-blue-400 hover:opacity-100"
+                  @click="exportGroup(item)">
+                <span class="text-[14px] text-white tracking-wider">导出分组</span>
               </div>
             </transition>
           </div>
@@ -113,7 +127,7 @@
 </template>
 
 <script setup>
-import {CloseBold, Delete, EditPen, Promotion, Select} from "@element-plus/icons-vue";
+import {CloseBold, Delete, Promotion, Select} from "@element-plus/icons-vue";
 import {VueDraggable} from "vue-draggable-plus";
 import {useAllData} from "../store/index.js";
 import {storeToRefs} from 'pinia'
@@ -124,6 +138,7 @@ import {ref} from "vue";
 const allDataStore = useAllData()
 const {group_name, group_list, group_data, group_switch} = storeToRefs(allDataStore);  // 响应式解构数据
 const _isRemoveGroup = ref(false)  // 是否展示删除组件
+const enter_remove = ref(false)  // 是否进入删除区域
 const remove_group = []  // 将要移除的分组
 const _is_put = ref(true)
 // 分组开始拖拽方法
@@ -228,6 +243,7 @@ const handleClose = (tag) => {
 
   .group-main {
     display: flex;
+    min-width: 379px;
     margin: 15px 0;
     flex-direction: column;
     align-items: center;
@@ -300,31 +316,6 @@ const handleClose = (tag) => {
         right: 5px;
         opacity: 0;
       }
-
-      .export-btn {
-        display: flex;
-        margin-top: 5px;
-        align-items: center;
-        justify-content: center;
-        font-size: 15px;
-        width: 100%;
-        background-color: #58d9e4;
-        border-radius: 0 0 5px 5px;
-
-        &:hover {
-          .export-btn-text {
-            opacity: 1;
-          }
-        }
-
-        .export-btn-text {
-          opacity: 0;
-          font-size: 14px;
-          color: white;
-          transition: all 0.5s ease;
-        }
-      }
-
     }
   }
 }
