@@ -10,33 +10,35 @@
       <el-scrollbar class="list-scrollbar">
         <div v-if="stu_list.length === 0 && is_upload === true">
           <el-upload
-              :auto-upload="false"
-              :drag="true"
-              :on-change="upload_file"
-              accept=".xlsx,.xls"
-              class="upload-demo"
+            :auto-upload="false"
+            :drag="true"
+            :on-change="upload_file"
+            accept=".xlsx,.xls"
+            class="upload-demo"
           >
             <el-icon class="el-icon--upload">
-              <upload-filled/>
+              <upload-filled />
             </el-icon>
             <div class="el-upload__text">
               <em>拖动文件到此导入</em>
             </div>
             <template #tip>
               <div class="el-upload__tip">
-                仅支持导入excel且至少有一列表头为“姓名” 注意：不要有任何合并的单元格
+                仅支持导入excel且至少有一列表头为“姓名”
+                注意：不要有任何合并的单元格
               </div>
             </template>
           </el-upload>
         </div>
-        <VueDraggable v-else
-                      v-model="stu_list "
-                      animation="150"
-                      class="drag"
-                      ghostClass="ghost"
-                      group="stu">
-          <div v-for="item in stu_list"
-               class="stu">
+        <VueDraggable
+          v-else
+          v-model="stu_list"
+          animation="150"
+          class="drag"
+          ghostClass="ghost"
+          group="stu"
+        >
+          <div v-for="item in stu_list" class="stu">
             <span>{{ item.姓名 }}</span>
           </div>
         </VueDraggable>
@@ -46,34 +48,32 @@
 </template>
 
 <script setup>
-import {VueDraggable} from "vue-draggable-plus";
-import {useAllData} from "./../store/index.js";
-import {storeToRefs} from "pinia";
-import {UploadFilled} from "@element-plus/icons-vue";
-import {readFile, sheetToJson} from './../utils/xlsl-tools.js'
+import { VueDraggable } from "vue-draggable-plus";
+import { useAllData } from "./../store/index.js";
+import { storeToRefs } from "pinia";
+import { UploadFilled } from "@element-plus/icons-vue";
+import { readFile, sheetToJson } from "./../utils/xlsl-tools.js";
 
-const {stu_list, is_upload, stu_list_length, group_switch, stu_list_temp} = storeToRefs(useAllData());  // 响应式解构store数据
+const { stu_list, is_upload, stu_list_length, group_switch, stu_list_temp } =
+  storeToRefs(useAllData()); // 响应式解构store数据
 
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
   // 获取excel的二进制数据
-  const rawFile = file.raw
-  const data = await readFile(rawFile)
+  const rawFile = file.raw;
+  const data = await readFile(rawFile);
   try {
-    const result = await sheetToJson(data)
-    console.log('获取的sheet数据:', result)
+    const result = await sheetToJson(data);
+    console.log("获取的sheet数据:", result);
     stu_list.value = structuredClone(result);
-    stu_list_temp.value = structuredClone(result)
+    stu_list_temp.value = structuredClone(result);
     is_upload.value = false;
-    stu_list_length.value = result.length
+    stu_list_length.value = result.length;
   } catch (err) {
     is_upload.value = true;
-    console.error(err)
+    console.error(err);
   }
-
-}
-
-
+};
 </script>
 
 <style lang="scss" scoped>
@@ -158,8 +158,6 @@ const upload_file = async (file) => {
       font-size: 17px;
     }
   }
-
-
 }
 
 .ghost {
