@@ -10,7 +10,7 @@
         :inactive-action-icon="CloseBold"
         class="switch_bnt"
       />
-      <h2 style="white-space: nowrap">学生分组</h2>
+      <h2 class="font-bold" style="white-space: nowrap">学生分组</h2>
       <el-button
         :icon="Promotion"
         class="group-header-but"
@@ -121,29 +121,31 @@
           @start="groupDragStart('_is_put_no')"
         >
           <div v-for="item in group_data" class="group-foot-item">
-            <div class="font-medium text-gray-700">
+            <div class="font-bold text-[15px] text-gray-700">
               {{ item.group_name }}
             </div>
-            <VueDraggable
-              v-model="item.group_list"
-              :group="{ name: 'stu', pull: true, put: _is_put }"
-              animation="150"
-              class="grid min-h-20 min-w-20 grid-cols-3 grid-rows-3 gap-0.5"
-              ghostClass="ghost"
-              @change="
-                () => {
-                  enter_remove = false;
-                }
-              "
-              @end="groupDragEnd"
-              @start="groupDragStart"
-            >
-              <div v-for="item_item in item.group_list" class="m-1">
-                <el-tag>
-                  {{ item_item.姓名 }}
-                </el-tag>
-              </div>
-            </VueDraggable>
+            <el-scrollbar class="max-h-[100px]">
+              <VueDraggable
+                v-model="item.group_list"
+                :group="{ name: 'stu', pull: true, put: _is_put }"
+                animation="150"
+                class="grid min-h-20 min-w-20 grid-cols-3 grid-rows-3 gap-0.5"
+                ghostClass="ghost"
+                @change="
+                  () => {
+                    enter_remove = false;
+                  }
+                "
+                @end="groupDragEnd"
+                @start="groupDragStart"
+              >
+                <div v-for="item_item in item.group_list" class="m-1">
+                  <el-tag>
+                    {{ item_item.姓名 }}
+                  </el-tag>
+                </div>
+              </VueDraggable>
+            </el-scrollbar>
             <transition>
               <div
                 class="flex w-full items-center justify-center rounded-b-md bg-blue-400 opacity-0 transition-opacity duration-300 hover:opacity-100"
@@ -328,6 +330,7 @@ const handleClose = (tag) => {
     grid-template-columns: repeat(2, 1fr);
 
     .group-foot-item {
+      padding-top: 5px;
       position: relative;
       min-height: 150px;
       min-width: 179px;
@@ -339,12 +342,6 @@ const handleClose = (tag) => {
       align-items: center;
       justify-content: space-between;
       box-shadow: 0 0 10px #d1d1d1;
-
-      &:hover {
-        .group-foot-item-closeIcon {
-          opacity: 1;
-        }
-      }
 
       .group-foot-item-closeIcon {
         position: absolute;

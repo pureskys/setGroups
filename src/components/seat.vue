@@ -27,7 +27,7 @@
     </div>
 
     <header class="seat-header">
-      <h2 style="white-space: nowrap">座位布局</h2>
+      <h2 class="font-bold" style="white-space: nowrap">座位布局</h2>
       <span class="seat-header-line"></span>
       <span>行:</span>
       <el-input

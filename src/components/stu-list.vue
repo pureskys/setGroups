@@ -4,7 +4,7 @@
     <div v-if="group_switch" class="disabled-overlay"></div>
 
     <header class="stu-head">
-      <h2>学生名单</h2>
+      <h2 class="font-bold">学生名单</h2>
     </header>
     <div class="list">
       <el-scrollbar class="list-scrollbar">
