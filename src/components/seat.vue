@@ -109,10 +109,10 @@ const allDataStore = useAllData();
 const {
   stu_list,
   is_upload,
-  seat_list,
   stu_list_length,
   row,
   column,
+  seat_list,
   group_switch,
   stu_list_temp,
 } = storeToRefs(allDataStore); // 响应式解构数据

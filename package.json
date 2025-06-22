@@ -10,15 +10,15 @@
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
-    "@tailwindcss/vite": "^4.1.7",
-    "docx": "^9.5.0",
-    "element-plus": "^2.9.10",
+    "@tailwindcss/vite": "^4.1.10",
+    "docx": "^9.5.1",
+    "element-plus": "^2.10.2",
     "file-saver": "^2.0.5",
-    "pinia": "^3.0.2",
+    "pinia": "^3.0.3",
     "pinia-plugin-persistedstate": "^4.3.0",
-    "sass": "^1.89.0",
-    "tailwindcss": "^4.1.7",
-    "vue": "^3.5.14",
+    "sass": "^1.89.2",
+    "tailwindcss": "^4.1.10",
+    "vue": "^3.5.17",
     "vue-draggable-plus": "^0.6.0",
     "vue-router": "^4.5.1",
     "xlsx": "^0.18.5"
@@ -26,7 +26,7 @@
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.2.4",
     "prettier": "^3.5.3",
-    "prettier-plugin-tailwindcss": "^0.6.11",
+    "prettier-plugin-tailwindcss": "^0.6.13",
     "vite": "^6.3.5"
   }
 }

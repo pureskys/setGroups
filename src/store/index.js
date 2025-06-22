@@ -4,7 +4,7 @@ export const useAllData = defineStore("SetSeatStore", {
   state: () => ({
     stu_list: [], // 学生名单数组
     stu_list_temp: [], // 学生名单全额缓存
-    seat_list: [], // 座位排列数组
+    seat_list: Array.from({ length: 42 }, () => []), // 座位排列数组
     row: 7, // 定义行数
     column: 6, // 定义列数
     is_upload: true, // 是否显示上传控件的标记
