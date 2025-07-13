@@ -77,6 +77,7 @@
             <VueDraggable
               v-for="(seat, index) in seat_list"
               v-model="seat_list[index]"
+              @sort="onUpdate"
               animation="150"
               class="seat-main-scrollbar-drag-drag"
               ghostClass="ghost"
@@ -99,6 +100,7 @@
 
 <script setup>
 import { computed, toRaw, watch } from "vue";
+import dayjs from "dayjs";
 import { DeleteFilled, Grid, Promotion } from "@element-plus/icons-vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { useAllData } from "./../store/index.js";
@@ -115,7 +117,12 @@ const {
   seat_list,
   group_switch,
   stu_list_temp,
+  update_time,
 } = storeToRefs(allDataStore); // 响应式解构数据
+const onUpdate = () => {
+  update_time.value = dayjs().format("YYYY-MM-DD HH:mm");
+  console.log(update_time.value);
+};
 const row_column = computed(() => row.value * column.value); // 座次数量
 // 监听 row 变化，更新 seat_list
 watch(

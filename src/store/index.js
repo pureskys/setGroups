@@ -13,6 +13,8 @@ export const useAllData = defineStore("SetSeatStore", {
     group_list: [], // 待创建分组的数组
     group_data: [], // 完成分组的数据
     group_switch: false, // 是否开启分组功能
+    class_name: "默认班级", // 班级名称
+    update_time: null, // 更新时间
   }),
   persist: true,
 });

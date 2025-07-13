@@ -1,5 +1,5 @@
 <template>
-  <div class="stu-list">
+  <div class="stu-list" :style="{ height: stu_list_height }">
     <!-- 禁用时的遮罩层 -->
     <div v-if="group_switch" class="disabled-overlay"></div>
 
@@ -45,6 +45,28 @@
       </el-scrollbar>
     </div>
   </div>
+  <!--  用户卡片-->
+  <div
+    ref="user_card"
+    class="m-2.5 mt-2 flex flex-col rounded-xl p-2 shadow-[0_0_5px_#d1d1d1]"
+    @click="dialogVisible = true"
+  >
+    <div class="flex-rows flex items-center gap-3">
+      <div>
+        <img
+          class="h-[60px] rounded-full shadow"
+          src="./../../public/logo.png"
+          alt=""
+        />
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <div class="font-semibold text-blue-400">晨阳</div>
+        <div class="text-xs text-gray-500">和光同尘，与时舒卷</div>
+      </div>
+    </div>
+  </div>
+  <!-- 数据信息弹窗-->
+  <data-info-dialog v-model="dialogVisible" />
 </template>
 
 <script setup>
@@ -53,10 +75,34 @@ import { useAllData } from "./../store/index.js";
 import { storeToRefs } from "pinia";
 import { UploadFilled } from "@element-plus/icons-vue";
 import { readFile, sheetToJson } from "./../utils/xlsl-tools.js";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import DataInfoDialog from "./data-info-dialog.vue";
 
 const { stu_list, is_upload, stu_list_length, group_switch, stu_list_temp } =
   storeToRefs(useAllData()); // 响应式解构store数据
 
+const dialogVisible = ref(false);
+
+const user_card = ref(null); // 定义用户卡片的ref
+const user_card_height = ref(0); // 定义用户卡片的高度
+const stu_list_height = computed(() => {
+  return `calc(100dvh - ${user_card_height.value}px)`;
+});
+const updateHeight = () => {
+  if (user_card.value) {
+    user_card_height.value = user_card.value.offsetHeight + 55;
+    console.log(user_card_height.value);
+  }
+};
+// 组件加载时监听
+onMounted(() => {
+  updateHeight();
+  window.addEventListener("resize", updateHeight);
+});
+// 组件卸载时移除监听
+onUnmounted(() => {
+  window.removeEventListener("resize", updateHeight);
+});
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
   // 获取excel的二进制数据
@@ -97,7 +143,7 @@ const upload_file = async (file) => {
   background-color: #ffffff;
   box-shadow: 0 0 5px #d1d1d1;
   padding: 8px 4px;
-  height: 95vh;
+  height: 82vh;
   margin: 0 10px;
   min-width: 205px;
   border-radius: 8px;
@@ -123,6 +169,7 @@ const upload_file = async (file) => {
     height: calc(100% - 45.2px);
 
     .list-scrollbar {
+      height: 100%;
       width: 100%;
     }
 
