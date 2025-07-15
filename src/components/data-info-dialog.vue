@@ -22,19 +22,35 @@
           </el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button type="primary">同步到云端</el-button>
+              <el-button
+                :loading="setCloudData_loading"
+                @click="setCloudData"
+                type="primary"
+                >同步到云端
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
         <header class="font-bold">云端数据 :</header>
         <el-table :data="cloud_gridData">
-          <el-table-column property="date" label="更新日期" width="200" />
-          <el-table-column property="name" label="班级名称" width="250">
+          <el-table-column
+            property="update_time"
+            label="更新日期"
+            width="200"
+          />
+          <el-table-column property="class_name" label="班级名称" width="250">
           </el-table-column>
           <el-table-column label="操作">
             <template #default="scope">
-              <el-button type="primary">同步到本地</el-button>
-              <el-button type="danger">删除</el-button>
+              <el-button @click="syncToLocal(scope.$index)" type="primary"
+                >同步到本地
+              </el-button>
+              <el-button
+                :loading="deleSeat_loading"
+                @click="deleSeat(scope.$index)"
+                type="danger"
+                >删除
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -89,6 +105,14 @@
             v-model="user_info_form.email"
           ></el-input>
         </el-form-item>
+        <div v-if="radio1 !== '1'">个性签名(可选)</div>
+        <el-form-item v-if="radio1 !== '1'" prop="email">
+          <el-input
+            placeholder="请输入个性签名"
+            clearable
+            v-model="user_info_form.signature"
+          ></el-input>
+        </el-form-item>
         <div class="mt-5 flex justify-around">
           <el-button
             v-if="radio1 === '2'"
@@ -114,7 +138,13 @@
 import { computed, onMounted, reactive, ref } from "vue";
 import { storeToRefs } from "pinia";
 import { useAllData } from "./../store/index.js";
-import { login, register } from "./../api/user.js";
+import {
+  deleteData,
+  getUserInfo,
+  login,
+  register,
+  setData,
+} from "./../api/user.js";
 import { getToken, removeToken, saveToken } from "./../utils/auth";
 import { ElMessage } from "element-plus";
 
@@ -135,18 +165,14 @@ const local_gridData = computed(() => {
   ];
 });
 // 定义云端表格数据
-const cloud_gridData = ref([
-  {
-    date: "2024-01-01",
-    name: "班级1",
-  },
-]);
-
+const cloud_gridData = ref();
 const allDataStore = useAllData(); // 获取store
 const { update_time, class_name } = storeToRefs(allDataStore); // 响应式解构数据
 const registerForm = ref(null); // 注册表单的ref
 const auth_succeed = ref(false); // 登录成功标志
 const radio1 = ref("1"); //表单展示状态
+const setCloudData_loading = ref(false); //同步到云端状态
+const deleSeat_loading = ref(false); // 删除云端数据
 
 // 表单验证规则
 const formRules = {
@@ -160,7 +186,7 @@ const formRules = {
   ],
   nickname: [
     { required: true, message: "昵称不能为空", trigger: "blur" },
-    { min: 2, max: 10, message: "昵称长度在2到10个字符", trigger: "blur" },
+    { min: 1, max: 5, message: "昵称长度在1到5个字符", trigger: "blur" },
   ],
   email: [
     {
@@ -176,8 +202,58 @@ const user_info_form = reactive({
   passwd: "",
   email: "",
   nickname: "",
+  signature: "",
 });
 
+//删除座位数据
+const deleSeat = async (index) => {
+  deleSeat_loading.value = true;
+  const token = getToken();
+  try {
+    const res = await deleteData(token, index);
+    if (res.code === 200) {
+      ElMessage.success("删除云端数据成功");
+      await getCloudData();
+      console.log("删除成功：", res, index);
+      deleSeat_loading.value = false;
+    } else {
+      console.log("删除失败");
+    }
+  } catch (error) {
+    console.log("error", error);
+  }
+};
+
+//同步数据到本地
+const syncToLocal = (index) => {
+  console.log(index);
+  allDataStore.$state = { ...cloud_gridData.value[index] };
+};
+
+// 获取云端数据
+const getCloudData = async () => {
+  const token = getToken();
+  const res = await getUserInfo(token);
+  const seats = res.user.seats.seats;
+  cloud_gridData.value = seats;
+  console.log(seats);
+};
+
+// 同步到云端
+const setCloudData = async () => {
+  setCloudData_loading.value = true;
+  const token = getToken();
+  const res = await setData(token, allDataStore);
+  console.log(res);
+  if (res.code === 200) {
+    ElMessage.success("同步到云端成功");
+    console.log("同步到云端成功", res);
+    setCloudData_loading.value = false;
+    await getCloudData();
+  } else {
+    ElMessage.error("同步到云端失败");
+  }
+};
 // 检查认证状态（包括 token 有效性）
 const checkAuthStatus = () => {
   const token = getToken();
@@ -186,6 +262,7 @@ const checkAuthStatus = () => {
     return;
   }
   auth_succeed.value = true;
+  getCloudData(); // 获取云端数据
 };
 // 退出登录方法
 const exit_login = () => {
@@ -202,6 +279,7 @@ const runRegister = async () => {
       username: user_info_form.user_name,
       password: user_info_form.passwd,
       nickname: user_info_form.nickname,
+      signature: user_info_form.signature,
     };
     if (user_info_form.email) {
       data.email = user_info_form.email;

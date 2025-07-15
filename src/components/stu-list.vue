@@ -60,8 +60,10 @@
         />
       </div>
       <div class="flex flex-col gap-1.5">
-        <div class="font-semibold text-blue-400">晨阳</div>
-        <div class="text-xs text-gray-500">和光同尘，与时舒卷</div>
+        <div class="font-semibold text-blue-400">{{ user_nickname }}</div>
+        <div class="max-w-[118px] truncate text-xs text-gray-500">
+          {{ user_signature }}
+        </div>
       </div>
     </div>
   </div>
@@ -77,32 +79,53 @@ import { UploadFilled } from "@element-plus/icons-vue";
 import { readFile, sheetToJson } from "./../utils/xlsl-tools.js";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import DataInfoDialog from "./data-info-dialog.vue";
+import { getToken } from "../utils/auth.js";
+import { getUserInfo } from "../api/user.js";
+import { userInfo } from "../store/userInfo.js";
 
 const { stu_list, is_upload, stu_list_length, group_switch, stu_list_temp } =
   storeToRefs(useAllData()); // 响应式解构store数据
-
-const dialogVisible = ref(false);
-
+const dialogVisible = ref(false); // 定义弹窗的显示状态
 const user_card = ref(null); // 定义用户卡片的ref
 const user_card_height = ref(0); // 定义用户卡片的高度
+const user_nickname = ref("未登录"); // 定义用户昵称
+const user_signature = ref("和光同尘，与时舒卷"); // 定义用户签名
+
 const stu_list_height = computed(() => {
   return `calc(100dvh - ${user_card_height.value}px)`;
 });
 const updateHeight = () => {
   if (user_card.value) {
     user_card_height.value = user_card.value.offsetHeight + 55;
-    console.log(user_card_height.value);
   }
 };
 // 组件加载时监听
 onMounted(() => {
   updateHeight();
+  getAuthStatus();
   window.addEventListener("resize", updateHeight);
 });
 // 组件卸载时移除监听
 onUnmounted(() => {
   window.removeEventListener("resize", updateHeight);
 });
+// 获取登录信息
+const getAuthStatus = async () => {
+  try {
+    const token = getToken();
+    if (token) {
+      const response = await getUserInfo(token);
+      Object.assign(userInfo(), response.user);
+      user_nickname.value = userInfo().nickname;
+      user_signature.value = userInfo().signature;
+    } else {
+      console.log("未登录");
+      user_nickname.value = "未登录";
+    }
+  } catch (e) {
+    console.log("获取登录信息失败", e.message);
+  }
+};
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
   // 获取excel的二进制数据
