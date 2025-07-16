@@ -27,7 +27,7 @@
             <template #default="scope">
               <el-button
                 :loading="setCloudData_loading"
-                @click="setCloudData"
+                @click="setCloudData()"
                 type="primary"
                 >同步到云端
               </el-button>
@@ -317,6 +317,7 @@ const deleSeat = async (index) => {
 const syncToLocal = (index) => {
   console.log(index);
   allDataStore.$state = { ...cloud_gridData.value[index] };
+  ElMessage.success("同步到本地成功");
 };
 
 // 获取云端数据
@@ -324,25 +325,24 @@ const getCloudData = async () => {
   const token = getToken();
   const res = await getUserInfo(token);
   cloud_data.value = res.user;
-  console.log(cloud_data);
-  const seats = res.user.seats.seats;
-  cloud_gridData.value = seats;
-  console.log(seats);
+  cloud_gridData.value = res.user.seats.seats;
 };
 
 // 同步到云端
 const setCloudData = async () => {
-  setCloudData_loading.value = true;
-  const token = getToken();
-  const res = await setData(token, allDataStore);
-  console.log(res);
-  if (res.code === 200) {
+  try {
+    setCloudData_loading.value = true;
+    const token = getToken();
+    const jsonData = JSON.stringify(allDataStore.$state);
+    const res = await setData(token, jsonData);
     ElMessage.success("同步到云端成功");
     console.log("同步到云端成功", res);
-    setCloudData_loading.value = false;
     await getCloudData();
-  } else {
-    ElMessage.error("同步到云端失败");
+    setCloudData_loading.value = false;
+  } catch (error) {
+    ElMessage.error("同步到云端失败", error);
+    console.log(error);
+    setCloudData_loading.value = false;
   }
 };
 // 检查认证状态（包括 token 有效性）

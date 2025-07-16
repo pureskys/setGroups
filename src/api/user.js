@@ -34,10 +34,10 @@ export function setData(token, data) {
   return request({
     url: "/setGroups/setData",
     method: "post",
+    data: data,
     headers: {
       Authorization: `Bearer ${token}`,
     },
-    data: data,
   });
 }
 

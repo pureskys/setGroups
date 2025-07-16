@@ -113,7 +113,6 @@ onUnmounted(() => {
 const avatarColor = () => {
   if (!user_nickname) return "#cccccc";
   const hue = (user_nickname.value.charCodeAt(0) * 20) % 360;
-  console.log(hue);
   return `hsl(${hue}, 70%, 60%)`;
 };
 // 获取登录信息
