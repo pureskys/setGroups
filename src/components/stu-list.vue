@@ -53,11 +53,9 @@
   >
     <div class="flex-rows flex items-center gap-3">
       <div>
-        <img
-          class="h-[60px] rounded-full shadow"
-          src="./../../public/logo.png"
-          alt=""
-        />
+        <el-avatar :style="{ backgroundColor: avatarColor() }">
+          {{ user_nickname.trim().charAt(0).toUpperCase() }}
+        </el-avatar>
       </div>
       <div class="flex flex-col gap-1.5">
         <div class="font-semibold text-blue-400">{{ user_nickname }}</div>
@@ -109,6 +107,14 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", updateHeight);
 });
+
+// 根据首字符获取颜色
+const avatarColor = () => {
+  if (!user_nickname) return "#cccccc";
+  const hue = (user_nickname.value.charCodeAt(0) * 20) % 360;
+  console.log(hue)
+  return `hsl(${hue}, 70%, 60%)`;
+};
 // 获取登录信息
 const getAuthStatus = async () => {
   try {

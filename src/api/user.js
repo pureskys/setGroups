@@ -41,11 +41,24 @@ export function setData(token, data) {
   });
 }
 
+// 删除云端座位数据
 export function deleteData(token, index) {
   return request({
     url: "/setGroups/delete",
     method: "delete",
     params: { index },
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
+// 更新云端用户数据
+export function updateUserData(token, data) {
+  return request({
+    url: "/auth/updateUserInfo",
+    method: "post",
+    data: data,
     headers: {
       Authorization: `Bearer ${token}`,
     },

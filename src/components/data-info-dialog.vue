@@ -4,14 +4,17 @@
       <div class="flex flex-row justify-between">
         <h4 :id="titleId" :class="titleClass">用户中心</h4>
         <div v-if="auth_succeed">
-          <el-button>修改信息</el-button>
+          <el-button @click="is_update_userinfo = !is_update_userinfo"
+            >{{ is_update_userinfo ? "查看数据" : "修改信息" }}
+          </el-button>
           <el-button @click="exit_login">退出登录</el-button>
         </div>
       </div>
     </template>
     <!--    登录成功展示-->
     <div v-if="auth_succeed">
-      <div>
+      <!--      登录成功默认显示（数据页面）-->
+      <div v-if="is_update_userinfo === false">
         <header class="font-bold">本地数据 :</header>
         <el-table :data="local_gridData">
           <el-table-column property="date" label="更新日期" width="200" />
@@ -54,6 +57,68 @@
             </template>
           </el-table-column>
         </el-table>
+      </div>
+      <!--      登录成功（修改用户信息页面）-->
+      <div class="flex flex-col items-center justify-center" v-else>
+        <div class="mb-3 text-xl font-bold">修改用户信息</div>
+        <el-form
+          :rules="formRules"
+          :model="user_info_form"
+          ref="registerForm"
+          class="flex w-100 flex-col justify-center rounded p-5 shadow"
+        >
+          <div>昵称</div>
+          <el-form-item>
+            <el-input
+              :placeholder="cloud_data.nickname"
+              clearable
+              v-model="user_info_form.nickname"
+            ></el-input>
+          </el-form-item>
+          <div>用户名(不允许修改)</div>
+          <el-form-item>
+            <el-input
+              :placeholder="cloud_data.username"
+              disabled
+              clearable
+            ></el-input>
+          </el-form-item>
+          <div>密码</div>
+          <el-form-item>
+            <el-input
+              type="password"
+              placeholder="请输入密码(至少6位)"
+              show-password
+              clearable
+              v-model="user_info_form.passwd"
+            ></el-input>
+          </el-form-item>
+          <div>邮箱(可选)</div>
+          <el-form-item prop="email">
+            <el-input
+              :placeholder="cloud_data.email"
+              clearable
+              v-model="user_info_form.email"
+            ></el-input>
+          </el-form-item>
+          <div>个性签名(可选)</div>
+          <el-form-item prop="signature">
+            <el-input
+              :placeholder="cloud_data.signature"
+              clearable
+              v-model="user_info_form.signature"
+            ></el-input>
+          </el-form-item>
+          <div class="mt-5 flex justify-around">
+            <el-button
+              @click="update_userinfo"
+              v-if="radio1 === '1'"
+              type="primary"
+              class="w-full"
+              >修改信息
+            </el-button>
+          </div>
+        </el-form>
       </div>
     </div>
     <!--    未登录展示-->
@@ -106,7 +171,7 @@
           ></el-input>
         </el-form-item>
         <div v-if="radio1 !== '1'">个性签名(可选)</div>
-        <el-form-item v-if="radio1 !== '1'" prop="email">
+        <el-form-item prop="signature" v-if="radio1 !== '1'">
           <el-input
             placeholder="请输入个性签名"
             clearable
@@ -144,6 +209,7 @@ import {
   login,
   register,
   setData,
+  updateUserData,
 } from "./../api/user.js";
 import { getToken, removeToken, saveToken } from "./../utils/auth";
 import { ElMessage } from "element-plus";
@@ -173,6 +239,8 @@ const auth_succeed = ref(false); // 登录成功标志
 const radio1 = ref("1"); //表单展示状态
 const setCloudData_loading = ref(false); //同步到云端状态
 const deleSeat_loading = ref(false); // 删除云端数据
+const is_update_userinfo = ref(false); // 修改用户信息页面状态
+const cloud_data = ref(); // 云端数据
 
 // 表单验证规则
 const formRules = {
@@ -195,6 +263,9 @@ const formRules = {
       trigger: ["blur", "change"],
     },
   ],
+  signature: [
+    { min: 0, max: 50, message: "个性签名长度在0到50个字符", trigger: "blur" },
+  ],
 };
 // 表单数据
 const user_info_form = reactive({
@@ -204,6 +275,24 @@ const user_info_form = reactive({
   nickname: "",
   signature: "",
 });
+
+// 修改用户信息
+const update_userinfo = async () => {
+  try {
+    // 验证表单
+    await registerForm.value.validate();
+    // 获取token
+    const token = getToken();
+    await updateUserData(token, user_info_form);
+    ElMessage.success("修改用户信息成功");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
+  } catch (error) {
+    console.log(error);
+    ElMessage.error("修改用户信息失败", error.message);
+  }
+};
 
 //删除座位数据
 const deleSeat = async (index) => {
@@ -234,6 +323,8 @@ const syncToLocal = (index) => {
 const getCloudData = async () => {
   const token = getToken();
   const res = await getUserInfo(token);
+  cloud_data.value = res.user;
+  console.log(cloud_data);
   const seats = res.user.seats.seats;
   cloud_gridData.value = seats;
   console.log(seats);
@@ -264,10 +355,14 @@ const checkAuthStatus = () => {
   auth_succeed.value = true;
   getCloudData(); // 获取云端数据
 };
+
 // 退出登录方法
 const exit_login = () => {
   removeToken();
-  window.location.reload(); // 直接刷新页面
+  ElMessage.success("退出登录成功");
+  setTimeout(() => {
+    window.location.reload(); // 直接刷新页面
+  }, 1500);
 };
 // 注册方法
 const runRegister = async () => {
@@ -286,7 +381,10 @@ const runRegister = async () => {
     }
     const res = await register(data);
     saveToken(res.token); // 保存token到本地
-    window.location.reload(); // 直接刷新页面
+    ElMessage.success("注册成功");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   } catch (e) {
     removeToken(); // 清除token
     window.location.reload(); // 直接刷新页面
@@ -305,7 +403,10 @@ const runLogin = async () => {
     };
     const res = await login(data);
     saveToken(res.token); // 保存token到本地
-    window.location.reload(); // 直接刷新页面
+    ElMessage.success("登录成功");
+    setTimeout(() => {
+      window.location.reload();
+    }, 1500);
   } catch (e) {
     ElMessage.error("操作失败，账号或密码错误");
     console.log(e);
