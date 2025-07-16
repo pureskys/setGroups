@@ -80,6 +80,7 @@ import DataInfoDialog from "./data-info-dialog.vue";
 import { getToken } from "../utils/auth.js";
 import { getUserInfo } from "../api/user.js";
 import { userInfo } from "../store/userInfo.js";
+import { ElMessage } from "element-plus";
 
 const { stu_list, is_upload, stu_list_length, group_switch, stu_list_temp } =
   storeToRefs(useAllData()); // 响应式解构store数据
@@ -112,7 +113,7 @@ onUnmounted(() => {
 const avatarColor = () => {
   if (!user_nickname) return "#cccccc";
   const hue = (user_nickname.value.charCodeAt(0) * 20) % 360;
-  console.log(hue)
+  console.log(hue);
   return `hsl(${hue}, 70%, 60%)`;
 };
 // 获取登录信息
@@ -134,19 +135,32 @@ const getAuthStatus = async () => {
 };
 // 上传文件方法（其实是upload文件改变的方法）
 const upload_file = async (file) => {
-  // 获取excel的二进制数据
   const rawFile = file.raw;
   const data = await readFile(rawFile);
   try {
     const result = await sheetToJson(data);
-    console.log("获取的sheet数据:", result);
-    stu_list.value = structuredClone(result);
-    stu_list_temp.value = structuredClone(result);
+    console.log("原始表格数据:", result);
+
+    // 提取"姓名"列，生成[{姓名:值},{姓名:值}]格式
+    const nameData = result
+      .map((row) => {
+        // 找到表头为"姓名"的列
+        const nameKey = Object.keys(row).find((key) => key.trim() === "姓名");
+        return nameKey ? { 姓名: row[nameKey] } : null;
+      })
+      .filter((item) => item && item.姓名); // 过滤掉无效项
+
+    // 更新响应式数据
+    stu_list.value = structuredClone(nameData);
+    stu_list_temp.value = structuredClone(nameData);
     is_upload.value = false;
-    stu_list_length.value = result.length;
+    stu_list_length.value = nameData.length;
+
+    console.log("处理后的姓名数据:", nameData);
   } catch (err) {
     is_upload.value = true;
-    console.error(err);
+    console.error("文件处理错误:", err);
+    ElMessage.error("文件处理失败，请检查文件格式");
   }
 };
 </script>
