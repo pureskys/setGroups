@@ -121,7 +121,7 @@
           @start="groupDragStart('_is_put_no')"
         >
           <div v-for="item in group_data" class="group-foot-item">
-            <div class="font-bold text-[15px] text-gray-700">
+            <div class="text-[15px] font-bold text-gray-700">
               {{ item.group_name }}
             </div>
             <el-scrollbar class="max-h-[100px]">

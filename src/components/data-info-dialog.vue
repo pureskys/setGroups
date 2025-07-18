@@ -1,5 +1,5 @@
 <template>
-  <el-dialog v-model="props.dialogVisible" title="用户数据" width="700">
+  <el-dialog v-model="dialogVisible" title="用户数据" width="700">
     <template #header="{ titleId, titleClass }">
       <div class="flex flex-row justify-between">
         <h4 :id="titleId" :class="titleClass">用户中心</h4>
@@ -218,9 +218,7 @@ onMounted(() => {
   checkAuthStatus();
 });
 // 接收父组件传递的props
-const props = defineProps({
-  dialogVisible: Boolean,
-});
+const dialogVisible = defineModel();
 // 定义本地表格数据
 const local_gridData = computed(() => {
   return [
