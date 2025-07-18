@@ -1,6 +1,3 @@
-Based on the information provided, here's a tailored README.md for this project:
-
-```
 # setGroups
 
 基于 Vue 3 和 Vite 构建的小组管理设置平台
@@ -21,7 +18,6 @@ Based on the information provided, here's a tailored README.md for this project:
 - 用户信息管理
 
 ## 项目结构
-```
 ├── src/
 │   ├── components/        # 可复用的Vue组件
 │   ├── store/             # Pinia状态管理
@@ -33,7 +29,6 @@ Based on the information provided, here's a tailored README.md for this project:
 ├── public/                # 静态资源
 ├── .env.*                 # 环境变量配置
 └── README.md              # 项目说明
-```
 
 ## 安装指南
 1. 克隆仓库: `git clone https://gitee.com/pureskys/setGroups`
@@ -55,6 +50,3 @@ Based on the information provided, here's a tailored README.md for this project:
 
 ## 许可证
 本项目采用 MIT 许可证
-```
-
-请注意，由于无法访问实际代码内容，这个 README.md 是基于您提供的项目结构和文件信息撰写的。对于实际项目细节，建议根据具体实现内容进行相应调整。
