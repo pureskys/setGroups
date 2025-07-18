@@ -18,6 +18,7 @@
 - 用户信息管理
 
 ## 项目结构
+```
 ├── src/
 │   ├── components/        # 可复用的Vue组件
 │   ├── store/             # Pinia状态管理
@@ -29,6 +30,7 @@
 ├── public/                # 静态资源
 ├── .env.*                 # 环境变量配置
 └── README.md              # 项目说明
+```
 
 ## 安装指南
 1. 克隆仓库: `git clone https://gitee.com/pureskys/setGroups`
