@@ -90,9 +90,16 @@ import { getUserInfo } from "../api/user.js";
 import { userInfo } from "../store/userInfo.js";
 import { ElMessage } from "element-plus";
 import ColorContextMenu from "./ColorContextMenu.vue";
+import dayjs from "dayjs";
 
-const { stu_list, is_upload, stu_list_length, group_switch, stu_list_temp } =
-  storeToRefs(useAllData()); // 响应式解构store数据
+const {
+  stu_list,
+  is_upload,
+  update_time,
+  stu_list_length,
+  group_switch,
+  stu_list_temp,
+} = storeToRefs(useAllData()); // 响应式解构store数据
 const dialogVisible = ref(false); // 定义弹窗的显示状态
 const user_card = ref(null); // 定义用户卡片的ref
 const user_card_height = ref(0); // 定义用户卡片的高度
@@ -180,7 +187,7 @@ const upload_file = async (file) => {
     stu_list_temp.value = structuredClone(nameData);
     is_upload.value = false;
     stu_list_length.value = nameData.length;
-
+    update_time.value = dayjs().format("YYYY-MM-DD HH:mm");
     console.log("处理后的姓名数据:", nameData);
   } catch (err) {
     is_upload.value = true;

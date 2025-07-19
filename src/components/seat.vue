@@ -127,9 +127,9 @@ const {
   stu_list_temp,
   update_time,
 } = storeToRefs(allDataStore); // 响应式解构数据
+// 更新数据时间
 const onUpdate = () => {
   update_time.value = dayjs().format("YYYY-MM-DD HH:mm");
-  console.log(update_time.value);
 };
 const row_column = computed(() => row.value * column.value); // 座次数量
 // 监听 row 变化，更新 seat_list
