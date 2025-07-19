@@ -1,4 +1,4 @@
-import Cookies from 'js-cookie'
+import Cookies from "js-cookie";
 
 // 保存 Token 到 Cookie (默认1天过期)
 export function saveToken(token, expiresDays = 1) {

@@ -5,7 +5,7 @@
     :style="{ left: `${position.x}px`, top: `${position.y}px` }"
     @click.stop
   >
-    <h2 class="font-bold text-center">颜色标记</h2>
+    <h2 class="text-center font-bold">颜色标记</h2>
     <div
       v-for="color in colors"
       :key="color"
