@@ -315,7 +315,8 @@ const deleSeat = async (index) => {
 const syncToLocal = (index) => {
   console.log(index);
   allDataStore.$state = { ...cloud_gridData.value[index] };
-  ElMessage.success("同步到本地成功");
+  window.location.reload(); // 直接刷新页面
+  allDataStore.$state = { ...cloud_gridData.value[index] };
 };
 
 // 获取云端数据
