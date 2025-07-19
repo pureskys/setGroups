@@ -16,6 +16,8 @@
               <div
                 v-for="item in stu_list_temp"
                 :key="item.id"
+                :style="{ backgroundColor: item.color || 'transparent' }"
+                @contextmenu.prevent="(e) => menu.openMenu(e, item)"
                 class="disabled-overlay-stuList-drag-stuItem"
               >
                 <span>{{ item.姓名 }}</span>
@@ -85,6 +87,9 @@
             >
               <div
                 v-for="item in seat"
+                :key="item.id"
+                :style="{ backgroundColor: item.color || 'transparent' }"
+                @contextmenu.prevent="(e) => menu.openMenu(e, item)"
                 class="seat-main-scrollbar-drag-card transition-all duration-150 ease-in-out hover:scale-103 hover:bg-blue-100"
               >
                 <span>{{ item.姓名 }}</span>
@@ -95,19 +100,22 @@
       </div>
       <h2 class="seat-main-podium text-xl font-bold">讲 台</h2>
     </main>
+    <ColorContextMenu ref="menu" @color-selected="updateItemColor" />
   </div>
 </template>
 
 <script setup>
-import { computed, toRaw, watch } from "vue";
+import { computed, ref, toRaw, watch } from "vue";
 import dayjs from "dayjs";
 import { DeleteFilled, Grid, Promotion } from "@element-plus/icons-vue";
 import { VueDraggable } from "vue-draggable-plus";
 import { useAllData } from "./../store/index.js";
 import { storeToRefs } from "pinia";
 import { exportToWord } from "./../utils/export-seats.js";
+import ColorContextMenu from "./ColorContextMenu.vue";
 
-const allDataStore = useAllData();
+const menu = ref();
+const allDataStore = useAllData(); // 实例化仓库
 const {
   stu_list,
   is_upload,
@@ -181,6 +189,26 @@ watch(
   },
   { immediate: true },
 );
+
+// 设置学生颜色
+const updateItemColor = ({ color, item }) => {
+  const stu_list_temp_target = stu_list_temp.value.find(
+    (i) => i.id === item.id,
+  );
+  const seat_list_target = seat_list.value.flat().find((i) => i.id === item.id);
+  const stu_list_target = stu_list.value.find((i) => i.id === item.id);
+  if (stu_list_temp_target) {
+    stu_list_temp_target.color = color;
+  }
+  if (seat_list_target) {
+    seat_list_target.color = color;
+  }
+  if (stu_list_target) {
+    stu_list_target.color = color;
+  }
+};
+
+// 重置仓库数据
 const restStore = () => {
   allDataStore.$reset();
   row.value = 7;

@@ -38,7 +38,13 @@
           ghostClass="ghost"
           group="stu"
         >
-          <div v-for="item in stu_list" class="stu">
+          <div
+            :key="item.id"
+            :style="{ backgroundColor: item.color || 'transparent' }"
+            @contextmenu.prevent="(e) => menu.openMenu(e, item)"
+            v-for="item in stu_list"
+            class="stu"
+          >
             <span>{{ item.姓名 }}</span>
           </div>
         </VueDraggable>
@@ -67,6 +73,8 @@
   </div>
   <!-- 数据信息弹窗-->
   <data-info-dialog v-model="dialogVisible" />
+  <!--  注册右键菜单-->
+  <ColorContextMenu ref="menu" @color-selected="updateItemColor" />
 </template>
 
 <script setup>
@@ -81,6 +89,7 @@ import { getToken } from "../utils/auth.js";
 import { getUserInfo } from "../api/user.js";
 import { userInfo } from "../store/userInfo.js";
 import { ElMessage } from "element-plus";
+import ColorContextMenu from "./ColorContextMenu.vue";
 
 const { stu_list, is_upload, stu_list_length, group_switch, stu_list_temp } =
   storeToRefs(useAllData()); // 响应式解构store数据
@@ -89,7 +98,9 @@ const user_card = ref(null); // 定义用户卡片的ref
 const user_card_height = ref(0); // 定义用户卡片的高度
 const user_nickname = ref("未登录"); // 定义用户昵称
 const user_signature = ref("和光同尘，与时舒卷"); // 定义用户签名
+const menu = ref(null); // 定义右键菜单的ref
 
+//计算组件高度
 const stu_list_height = computed(() => {
   return `calc(100dvh - ${user_card_height.value}px)`;
 });
@@ -108,6 +119,15 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", updateHeight);
 });
+// 设置学生颜色
+const updateItemColor = ({ color, item }) => {
+  item.color = color;
+  const target = stu_list_temp.value.find((i) => i.id === item.id);
+  if (target) {
+    target.color = color;
+  }
+  console.log(target);
+};
 
 // 根据首字符获取颜色
 const avatarColor = () => {
@@ -140,12 +160,18 @@ const upload_file = async (file) => {
     const result = await sheetToJson(data);
     console.log("原始表格数据:", result);
 
-    // 提取"姓名"列，生成[{姓名:值},{姓名:值}]格式
+    // 提取"姓名"列，生成[{姓名:值, id:递增数字, color:""}]格式
     const nameData = result
-      .map((row) => {
+      .map((row, index) => {
         // 找到表头为"姓名"的列
         const nameKey = Object.keys(row).find((key) => key.trim() === "姓名");
-        return nameKey ? { 姓名: row[nameKey] } : null;
+        return nameKey
+          ? {
+              姓名: row[nameKey],
+              id: index + 1, // 从1开始递增的ID
+              color: "", // 空颜色
+            }
+          : null;
       })
       .filter((item) => item && item.姓名); // 过滤掉无效项
 
