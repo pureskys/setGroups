@@ -176,7 +176,7 @@ const upload_file = async (file) => {
           ? {
               姓名: row[nameKey],
               id: index + 1, // 从1开始递增的ID
-              color: "", // 空颜色
+              color: "white", // 默认白色
             }
           : null;
       })

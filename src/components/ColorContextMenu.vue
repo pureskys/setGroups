@@ -9,7 +9,7 @@
     <div
       v-for="color in colors"
       :key="color"
-      class="h-6 rounded-xl"
+      class="h-6 rounded-xl border border-gray-300"
       :style="{ backgroundColor: color || 'transparent' }"
       @click="selectColor(color)"
     ></div>
@@ -22,7 +22,7 @@ import { ref } from "vue";
 const emit = defineEmits(["color-selected"]);
 const showMenu = ref(false);
 const position = ref({ x: 0, y: 0 });
-const colors = ["#ff4444", "#ffcc00", "#44cc44"];
+const colors = ["#ff4444", "#ffcc00", "#44cc44","white"];
 const currentItem = ref(null); // 新增：用于存储当前操作的item
 
 const openMenu = (e, item) => {
