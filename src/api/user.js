@@ -3,7 +3,7 @@ import request from "./../utils/request.js";
 // 登录接口
 export function login(data) {
   return request({
-    url: "/auth/login", // 登录接口
+    url: "/setGroups/login", // 登录接口
     method: "post",
     data: data, // 自动转换为 JSON
   });
@@ -12,7 +12,7 @@ export function login(data) {
 // 注册接口
 export function register(data) {
   return request({
-    url: "/auth/register", // 注册接口
+    url: "/setGroups/register", // 注册接口
     method: "post",
     data: data,
   });
@@ -21,7 +21,7 @@ export function register(data) {
 // 获取信息
 export function getUserInfo(token) {
   return request({
-    url: "/auth/getUserInfo",
+    url: "/setGroups/getData",
     method: "get",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -56,7 +56,7 @@ export function deleteData(token, index) {
 // 更新云端用户数据
 export function updateUserData(token, data) {
   return request({
-    url: "/auth/updateUserInfo",
+    url: "/setGroups/updateUserInfo",
     method: "post",
     data: data,
     headers: {

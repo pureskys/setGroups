@@ -62,13 +62,13 @@
       <div class="flex flex-col items-center justify-center" v-else>
         <div class="mb-3 text-xl font-bold">修改用户信息</div>
         <el-form
-          :rules="formRules"
+          :rules="formRules_update"
           :model="user_info_form"
           ref="registerForm"
           class="flex w-100 flex-col justify-center rounded p-5 shadow"
         >
           <div>昵称</div>
-          <el-form-item>
+          <el-form-item prop="nickname">
             <el-input
               :placeholder="cloud_data.nickname"
               clearable
@@ -84,21 +84,13 @@
             ></el-input>
           </el-form-item>
           <div>密码</div>
-          <el-form-item>
+          <el-form-item prop="passwd">
             <el-input
               type="password"
               placeholder="请输入密码(至少6位)"
               show-password
               clearable
               v-model="user_info_form.passwd"
-            ></el-input>
-          </el-form-item>
-          <div>邮箱(可选)</div>
-          <el-form-item prop="email">
-            <el-input
-              :placeholder="cloud_data.email"
-              clearable
-              v-model="user_info_form.email"
             ></el-input>
           </el-form-item>
           <div>个性签名(可选)</div>
@@ -160,14 +152,6 @@
             show-password
             clearable
             v-model="user_info_form.passwd"
-          ></el-input>
-        </el-form-item>
-        <div v-if="radio1 !== '1'">邮箱(可选)</div>
-        <el-form-item v-if="radio1 !== '1'" prop="email">
-          <el-input
-            placeholder="请输入邮箱"
-            clearable
-            v-model="user_info_form.email"
           ></el-input>
         </el-form-item>
         <div v-if="radio1 !== '1'">个性签名(可选)</div>
@@ -252,24 +236,27 @@ const formRules = {
   ],
   nickname: [
     { required: true, message: "昵称不能为空", trigger: "blur" },
-    { min: 1, max: 5, message: "昵称长度在1到5个字符", trigger: "blur" },
-  ],
-  email: [
-    {
-      type: "email",
-      message: "请输入正确的邮箱地址",
-      trigger: ["blur", "change"],
-    },
+    { min: 1, max: 6, message: "昵称长度在1到6个字符", trigger: "blur" },
   ],
   signature: [
-    { min: 0, max: 50, message: "个性签名长度在0到50个字符", trigger: "blur" },
+    { min: 0, max: 64, message: "个性签名长度在0到64个字符", trigger: "blur" },
   ],
 };
+const formRules_update = {
+  passwd: [
+    { min: 6, message: "密码长度不能少于6位", trigger: "blur" },
+  ],
+  nickname: [
+    { min: 1, max: 6, message: "昵称长度在1到6个字符", trigger: "blur" },
+  ],
+  signature: [
+    { min: 0, max: 64, message: "个性签名长度在0到64个字符", trigger: "blur" },
+  ],
+}
 // 表单数据
 const user_info_form = reactive({
   user_name: "",
   passwd: "",
-  email: "",
   nickname: "",
   signature: "",
 });
@@ -279,9 +266,19 @@ const update_userinfo = async () => {
   try {
     // 验证表单
     await registerForm.value.validate();
+    const data = {
+      password: user_info_form.passwd,
+      nickname: user_info_form.nickname,
+      signature: user_info_form.signature,
+    };
+    // 移除空值字段
+    const dataToSend = Object.fromEntries(
+      Object.entries(data).filter(([_, value]) => value !== ""),
+    );
     // 获取token
     const token = getToken();
-    await updateUserData(token, user_info_form);
+
+    await updateUserData(token, dataToSend);
     ElMessage.success("修改用户信息成功");
     setTimeout(() => {
       window.location.reload();
@@ -324,7 +321,8 @@ const getCloudData = async () => {
   const token = getToken();
   const res = await getUserInfo(token);
   cloud_data.value = res.user;
-  cloud_gridData.value = res.user.seats.seats;
+  console.log("yunduan1", cloud_data.value);
+  cloud_gridData.value = res.user.setGroups;
 };
 
 // 同步到云端
@@ -375,9 +373,6 @@ const runRegister = async () => {
       nickname: user_info_form.nickname,
       signature: user_info_form.signature,
     };
-    if (user_info_form.email) {
-      data.email = user_info_form.email;
-    }
     const res = await register(data);
     saveToken(res.token); // 保存token到本地
     ElMessage.success("注册成功");
@@ -397,7 +392,7 @@ const runLogin = async () => {
     await registerForm.value.validate();
     // 开始登录
     const data = {
-      account: user_info_form.user_name,
+      username: user_info_form.user_name,
       password: user_info_form.passwd,
     };
     const res = await login(data);
