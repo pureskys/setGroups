@@ -243,16 +243,14 @@ const formRules = {
   ],
 };
 const formRules_update = {
-  passwd: [
-    { min: 6, message: "密码长度不能少于6位", trigger: "blur" },
-  ],
+  passwd: [{ min: 6, message: "密码长度不能少于6位", trigger: "blur" }],
   nickname: [
     { min: 1, max: 6, message: "昵称长度在1到6个字符", trigger: "blur" },
   ],
   signature: [
     { min: 0, max: 64, message: "个性签名长度在0到64个字符", trigger: "blur" },
   ],
-}
+};
 // 表单数据
 const user_info_form = reactive({
   user_name: "",
@@ -318,11 +316,17 @@ const syncToLocal = (index) => {
 
 // 获取云端数据
 const getCloudData = async () => {
-  const token = getToken();
-  const res = await getUserInfo(token);
-  cloud_data.value = res.user;
-  console.log("yunduan1", cloud_data.value);
-  cloud_gridData.value = res.user.setGroups;
+  try {
+    const token = getToken();
+    const res = await getUserInfo(token);
+    cloud_data.value = res.user;
+    console.log("yunduan1", cloud_data.value);
+    cloud_gridData.value = res.user.setGroups;
+  } catch (error) {
+    removeToken(); // 删除cookies
+    ElMessage.error("登录信息过期", error);
+    window.location.reload(); // 刷新浏览器
+  }
 };
 
 // 同步到云端

@@ -85,7 +85,7 @@ import { UploadFilled } from "@element-plus/icons-vue";
 import { readFile, sheetToJson } from "./../utils/xlsl-tools.js";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import DataInfoDialog from "./data-info-dialog.vue";
-import { getToken } from "../utils/auth.js";
+import { getToken, removeToken } from "../utils/auth.js";
 import { getUserInfo } from "../api/user.js";
 import { userInfo } from "../store/userInfo.js";
 import { ElMessage } from "element-plus";
@@ -156,7 +156,8 @@ const getAuthStatus = async () => {
       user_nickname.value = "未登录";
     }
   } catch (e) {
-    console.log("获取登录信息失败", e.message);
+    ElMessage.error("登录信息过期", e);
+    window.location.reload(); // 刷新浏览器
   }
 };
 // 上传文件方法（其实是upload文件改变的方法）

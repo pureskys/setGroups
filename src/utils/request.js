@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: 'http://127.0.0.1:3000',
+  baseURL: 'https://api.puresky.top',
   timeout: 10000, // 请求超时时间
   headers: {
     'Content-Type': 'application/json;charset=utf-8'

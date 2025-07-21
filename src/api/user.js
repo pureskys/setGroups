@@ -1,4 +1,5 @@
 import request from "./../utils/request.js";
+import { removeToken } from "../utils/auth.js";
 
 // 登录接口
 export function login(data) {
@@ -26,6 +27,13 @@ export function getUserInfo(token) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  }).catch((error) => {
+    // 清除 cookies
+    removeToken();
+    // 刷新页面
+    window.location.reload();
+    // 仍然抛出错误以便外部可以捕获
+    return Promise.reject(error);
   });
 }
 
@@ -38,6 +46,13 @@ export function setData(token, data) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  }).catch((error) => {
+    // 清除 cookies
+    removeToken();
+    // 刷新页面
+    window.location.reload();
+    // 仍然抛出错误以便外部可以捕获
+    return Promise.reject(error);
   });
 }
 
@@ -50,6 +65,13 @@ export function deleteData(token, index) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  }).catch((error) => {
+    // 清除 cookies
+    removeToken();
+    // 刷新页面
+    window.location.reload();
+    // 仍然抛出错误以便外部可以捕获
+    return Promise.reject(error);
   });
 }
 
@@ -62,5 +84,12 @@ export function updateUserData(token, data) {
     headers: {
       Authorization: `Bearer ${token}`,
     },
+  }).catch((error) => {
+    // 清除 cookies
+    removeToken();
+    // 刷新页面
+    window.location.reload();
+    // 仍然抛出错误以便外部可以捕获
+    return Promise.reject(error);
   });
 }
