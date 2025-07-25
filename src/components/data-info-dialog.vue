@@ -281,6 +281,7 @@ const update_userinfo = async () => {
     await updateUserData(token, dataToSend);
     ElMessage.success("修改用户信息成功");
     setTimeout(() => {
+      exit_login();
       window.location.reload();
     }, 1500);
   } catch (error) {
