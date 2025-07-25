@@ -2,34 +2,34 @@ import axios from "axios";
 
 // 创建 axios 实例
 const service = axios.create({
-  baseURL: 'http://localhost:3000',
+  baseURL: "https://api.puresky.top",
   timeout: 10000, // 请求超时时间
   headers: {
-    'Content-Type': 'application/json;charset=utf-8'
-  }
-})
+    "Content-Type": "application/json;charset=utf-8",
+  },
+});
 
 // 请求拦截器
 service.interceptors.request.use(
-  config => {
+  (config) => {
     // 在发送请求之前可以做一些处理
-    return config
+    return config;
   },
-  error => {
-    return Promise.reject(error)
-  }
-)
+  (error) => {
+    return Promise.reject(error);
+  },
+);
 
 // 响应拦截器
 service.interceptors.response.use(
-  response => {
+  (response) => {
     // 对响应数据做处理
-    return response.data
+    return response.data;
   },
-  error => {
+  (error) => {
     // 对响应错误做处理
-    return Promise.reject(error)
-  }
-)
+    return Promise.reject(error);
+  },
+);
 
-export default service
+export default service;
