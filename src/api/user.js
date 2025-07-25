@@ -4,7 +4,7 @@ import { removeToken } from "../utils/auth.js";
 // 登录接口
 export function login(data) {
   return request({
-    url: "/setGroups/login", // 登录接口
+    url: "/auth/login", // 登录接口
     method: "post",
     data: data, // 自动转换为 JSON
   });
@@ -13,16 +13,16 @@ export function login(data) {
 // 注册接口
 export function register(data) {
   return request({
-    url: "/setGroups/register", // 注册接口
+    url: "/users", // 注册接口
     method: "post",
     data: data,
   });
 }
 
-// 获取信息
+// 获取用户信息
 export function getUserInfo(token) {
   return request({
-    url: "/setGroups/getData",
+    url: "/users",
     method: "get",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -37,10 +37,21 @@ export function getUserInfo(token) {
   });
 }
 
+// 获取座位信息
+export function getSetGroups(token) {
+  return request({
+    url: "/set-groups",
+    method: "get",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+}
+
 // 同步到云端
 export function setData(token, data) {
   return request({
-    url: "/setGroups/setData",
+    url: "/set-groups",
     method: "post",
     data: data,
     headers: {
@@ -59,7 +70,7 @@ export function setData(token, data) {
 // 删除云端座位数据
 export function deleteData(token, index) {
   return request({
-    url: "/setGroups/delete",
+    url: `/set-groups/${index}`,
     method: "delete",
     params: { index },
     headers: {
@@ -75,11 +86,11 @@ export function deleteData(token, index) {
   });
 }
 
-// 更新云端用户数据
+// 修改用户信息
 export function updateUserData(token, data) {
   return request({
-    url: "/setGroups/updateUserInfo",
-    method: "post",
+    url: "/users",
+    method: "patch",
     data: data,
     headers: {
       Authorization: `Bearer ${token}`,

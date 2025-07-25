@@ -85,7 +85,7 @@ import { UploadFilled } from "@element-plus/icons-vue";
 import { readFile, sheetToJson } from "./../utils/xlsl-tools.js";
 import { computed, onMounted, onUnmounted, ref } from "vue";
 import DataInfoDialog from "./data-info-dialog.vue";
-import { getToken, removeToken } from "../utils/auth.js";
+import { getToken } from "../utils/auth.js";
 import { getUserInfo } from "../api/user.js";
 import { userInfo } from "../store/userInfo.js";
 import { ElMessage } from "element-plus";
@@ -148,7 +148,7 @@ const getAuthStatus = async () => {
     const token = getToken();
     if (token) {
       const response = await getUserInfo(token);
-      Object.assign(userInfo(), response.user);
+      Object.assign(userInfo(), response[0]);
       user_nickname.value = userInfo().nickname;
       user_signature.value = userInfo().signature;
     } else {

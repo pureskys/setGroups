@@ -50,7 +50,7 @@
               </el-button>
               <el-button
                 :loading="deleSeat_loading"
-                @click="deleSeat(scope.$index)"
+                @click="deleSeat(scope.row.uuid)"
                 type="danger"
                 >删除
               </el-button>
@@ -189,6 +189,7 @@ import { storeToRefs } from "pinia";
 import { useAllData } from "./../store/index.js";
 import {
   deleteData,
+  getSetGroups,
   getUserInfo,
   login,
   register,
@@ -197,6 +198,7 @@ import {
 } from "./../api/user.js";
 import { getToken, removeToken, saveToken } from "./../utils/auth";
 import { ElMessage } from "element-plus";
+import dayjs from "dayjs";
 
 onMounted(() => {
   checkAuthStatus();
@@ -288,15 +290,16 @@ const update_userinfo = async () => {
 };
 
 //删除座位数据
-const deleSeat = async (index) => {
+const deleSeat = async (seatId) => {
   deleSeat_loading.value = true;
   const token = getToken();
+  console.log(seatId);
   try {
-    const res = await deleteData(token, index);
-    if (res.code === 200) {
+    const res = await deleteData(token, seatId);
+    if (res.msg === "座位信息删除成功") {
       ElMessage.success("删除云端数据成功");
       await getCloudData();
-      console.log("删除成功：", res, index);
+      console.log("删除成功：", res);
       deleSeat_loading.value = false;
     } else {
       console.log("删除失败");
@@ -318,10 +321,10 @@ const syncToLocal = (index) => {
 const getCloudData = async () => {
   try {
     const token = getToken();
-    const res = await getUserInfo(token);
-    cloud_data.value = res.user;
-    console.log("yunduan1", cloud_data.value);
-    cloud_gridData.value = res.user.setGroups;
+    const userData = await getUserInfo(token);
+    const seatData = await getSetGroups(token);
+    cloud_data.value = userData[0];
+    cloud_gridData.value = seatData;
   } catch (error) {
     removeToken(); // 删除cookies
     ElMessage.error("登录信息过期", error);
@@ -333,6 +336,9 @@ const getCloudData = async () => {
 const setCloudData = async () => {
   try {
     setCloudData_loading.value = true;
+    if (update_time.value === null || update_time.value === undefined) {
+      update_time.value = dayjs().format("YYYY-MM-DD HH:mm");
+    }
     const token = getToken();
     const jsonData = JSON.stringify(allDataStore.$state);
     const res = await setData(token, jsonData);
@@ -400,7 +406,7 @@ const runLogin = async () => {
       password: user_info_form.passwd,
     };
     const res = await login(data);
-    saveToken(res.token); // 保存token到本地
+    saveToken(res.access_token); // 保存token到本地
     ElMessage.success("登录成功");
     setTimeout(() => {
       window.location.reload();
