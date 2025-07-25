@@ -384,7 +384,7 @@ const runRegister = async () => {
       signature: user_info_form.signature,
     };
     const res = await register(data);
-    saveToken(res.token); // 保存token到本地
+    saveToken(res.access_token); // 保存token到本地
     ElMessage.success("注册成功");
     setTimeout(() => {
       window.location.reload();
